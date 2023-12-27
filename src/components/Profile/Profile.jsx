@@ -164,115 +164,115 @@ const Profile = () => {
   }
 
   return (
-    <div className="flex flex-col items-start p-10 ml-24 mr-24 max-w-full mt-10 bg-gray-100 shadow-md">
-      <div className="flex items-center mb-6">
-        <div className="relative w-32 h-32 mx-auto mb-4 overflow-hidden rounded-md border-4 border-white">
-          {uploadedProfilePicture ? (
-            <img
-              src={`${apiBaseURL}/${uploadedProfilePicture}`}
-              alt="Profile"
-              className="w-full h-full object-cover rounded-md"
-            />
-          ) : (
-            <img
-              src={`${apiBaseURL}/${profile}`}
-              alt="Default Profile"
-              className="w-full h-full object-cover rounded-md"
-            />
-          )}
-          <label
-            htmlFor="profilePicture"
-            className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 cursor-pointer opacity-0 transition-opacity duration-300 hover:opacity-100"
-          >
-            <span className="text-white text-3xl">+</span>
-          </label>
-          <input
-            type="file"
-            id="profilePicture"
-            accept="image/*"
-            className="hidden"
-            onChange={handleProfilePictureChange}
-          />
-        </div>
-        <div className="ml-6">
-          <h1 className="text-3xl font-bold text-gray-800">
-            {`${user.firstName} ${user.lastName}`}
-          </h1>
-        </div>
+    <div className="flex flex-col items-start p-4 sm:p-10 ml-4 sm:ml-24 mr-4 sm:mr-24 max-w-full mt-4 sm:mt-10 bg-gray-100 shadow-md">
+  <div className="flex flex-col sm:flex-row items-center mb-4 sm:mb-6">
+    <div className="relative w-32 h-32 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md border-4 border-white">
+      {uploadedProfilePicture ? (
+        <img
+          src={`${apiBaseURL}/${uploadedProfilePicture}`}
+          alt="Profile"
+          className="w-full h-full object-cover rounded-md"
+        />
+      ) : (
+        <img
+          src={`${apiBaseURL}/${profile}`}
+          alt="Default Profile"
+          className="w-full h-full object-cover rounded-md"
+        />
+      )}
+      <label
+        htmlFor="profilePicture"
+        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 cursor-pointer opacity-0 transition-opacity duration-300 hover:opacity-100"
+      >
+        <span className="text-white text-3xl">+</span>
+      </label>
+      <input
+        type="file"
+        id="profilePicture"
+        accept="image/*"
+        className="hidden"
+        onChange={handleProfilePictureChange}
+      />
+    </div>
+    <div className="ml-0 sm:ml-6">
+      <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+        {`${user.firstName} ${user.lastName}`}
+      </h1>
+    </div>
+  </div>
+  <div className="flex flex-col sm:flex-row w-full">
+    <div className="w-full sm:w-2/5 lg:w-2/5 pr-0 sm:pr-8">
+      <button
+        className="bg-blue-500 text-white text-2xl sm:text-3xl w-full h-10 mb-4 rounded-full hover:bg-blue-600"
+        onClick={toggleAddAddressForm}
+      >
+        +
+      </button>
+      <AddressList
+        addresses={addresses}
+        setAddresses={setAddresses}
+        onEditAddress={handleEditAddress}
+      />
+    </div>
+    {showAddAddressForm && (
+      <div className="w-full sm:w-1/3 lg:w-1/3 pl-0 sm:pl-8">
+        <AddressForm
+          userId={user.userId}
+          sessionId={sessionId}
+          setAddresses={setAddresses}
+          editingAddress={editingAddress}
+          setEditingAddress={setEditingAddress}
+        />
       </div>
-      <div className="flex w-full">
-        <div className="w-2/5 pr-8">
-          <button
-            className="bg-blue-500 text-white text-3xl w-full h-10 mb-4 rounded-full hover:bg-blue-600"
-            onClick={toggleAddAddressForm}
-          >
-            +
-          </button>
-          <AddressList
-            addresses={addresses}
-            setAddresses={setAddresses}
-            onEditAddress={handleEditAddress}
-          />
-        </div>
-        {showAddAddressForm && (
-          <div className="w-1/3 pl-8">
-            <AddressForm
-              userId={user.userId}
-              sessionId={sessionId}
-              setAddresses={setAddresses}
-              editingAddress={editingAddress}
-              setEditingAddress={setEditingAddress}
-            />
-          </div>
-        )}
-        <div className="w-2/3 pl-8">
-          <div className="bg-white h-full p-6 rounded-md shadow-md">
-            <h2 className="text-2xl font-bold mb-4">Buy Virtual Coins</h2>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Coins to Buy</label>
-              <select
-                className="mt-1 p-2 w-full border rounded-md"
-                onChange={handleCoinsChange}
-                value={coinsToBuy}
-              >
-                <option value={0}>Select an option</option>
-                <option value={50}>50 coins for Rs. 50</option>
-                <option value={100}>100 coins for Rs. 100</option>
-                <option value={200}>200 coins for Rs. 200</option>
-                <option value={500}>500 coins for Rs. 500</option>
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Custom Coins</label>
-              <input
-                type="text"
-                className="mt-1 p-2 w-full border rounded-md"
-                placeholder="Enter custom coins"
-                value={customCoins}
-                onChange={handleCustomCoinsChange}
-              />
-            </div>
-            <p className="mb-2">
-              Total Price: Rs. {calculateTotalPrice()} (Including GST: Rs. {calculateGST()})
-            </p>
-            <p className="text-sm mt-2text-gray-500 mb-4">
-              The price includes GST at {calculateGSTPercentage()}% rate.
-            </p>
-            <button
-              className="bg-blue-500 mt-4 w-full h-10 text-white p-2 rounded-md hover:bg-blue-600"
-              onClick={handleBuyCoins}
-              disabled={coinsToBuy === 0 && !customCoins}
-            >
-              Buy Coins
-            </button>
-            <p className="text-sm text-gray-500 mt-2">
-              Note: Your purchase will be subject to our terms and conditions.
-            </p>
-            
-          </div>
-        </div>
+    )}
+    <div className="w-full sm:w-2/3 lg:w-2/3 pl-0 sm:pl-8">
+      <div className="bg-white h-full p-4 sm:p-6 rounded-md shadow-md">
+      <h2 className="text-2xl font-bold mb-4">Buy Virtual Coins</h2>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Coins to Buy</label>
+        <select
+          className="mt-1 p-2 w-full border rounded-md"
+          onChange={handleCoinsChange}
+          value={coinsToBuy}
+        >
+          <option value={0}>Select an option</option>
+          <option value={50}>50 coins for Rs. 50</option>
+          <option value={100}>100 coins for Rs. 100</option>
+          <option value={200}>200 coins for Rs. 200</option>
+          <option value={500}>500 coins for Rs. 500</option>
+        </select>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Custom Coins</label>
+        <input
+          type="text"
+          className="mt-1 p-2 w-full border rounded-md"
+          placeholder="Enter custom coins"
+          value={customCoins}
+          onChange={handleCustomCoinsChange}
+        />
+      </div>
+      <p className="mb-2">
+        Total Price: Rs. {calculateTotalPrice()} (Including GST: Rs. {calculateGST()})
+      </p>
+      <p className="text-sm mt-2text-gray-500 mb-4">
+        The price includes GST at {calculateGSTPercentage()}% rate.
+      </p>
+      <button
+        className="bg-blue-500 mt-4 w-full h-10 text-white p-2 rounded-md hover:bg-blue-600"
+        onClick={handleBuyCoins}
+        disabled={coinsToBuy === 0 && !customCoins}
+      >
+        Buy Coins
+      </button>
+      <p className="text-sm text-gray-500 mt-2">
+        Note: Your purchase will be subject to our terms and conditions.
+      </p>
       </div>
     </div>
+  </div>
+</div>
+
 
   );
 };

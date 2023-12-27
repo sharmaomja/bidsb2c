@@ -13,6 +13,7 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   const [filters, setFilters] = useState({});
   const apiBaseURL = process.env.REACT_APP_API_URL;
   const [limit, setLimit] = useState(9);
+  const [showFilters, setShowFilters] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -81,32 +82,66 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
     return <Pagination className="justify-content-center my-4">{items}</Pagination>;
   };
 
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
+  const closeFilters = () => {
+    setShowFilters(false);
+  };
+
   return (
     <Container fluid className="p-1">
       <Row>
         {/* Left section (1:4) */}
-        <Col lg={2} className="border-right border-gray-300" style={{ maxWidth: '280px' }}>
-
+        <Col lg={2} className={`border-right border-gray-300 ${showFilters ? 'block' : 'hidden'} md:block`}>
           <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
         </Col>
 
+        {/* Mobile view: Show Filters button */}
+        <Col md={12} className="text-center mt-2 md:hidden">
+          <button
+            onClick={toggleFilters}
+            className={`bg-blue-500 text-white px-4 py-2 rounded-full ${showFilters ? 'bg-red-500' : 'hover:bg-blue-600'
+              }`}
+          >
+            {showFilters ? 'Close Filters' : 'Show Filters'}
+          </button>
+        </Col>
+
+        {/* Conditionally render Filters component for mobile view */}
+        {showFilters && (
+          <Col lg={2} className="border-right border-gray-300 md:hidden">
+            <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
+            <div className="text-center mt-2">
+              <button
+                onClick={closeFilters}
+                className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600"
+              >
+                Close Filters
+              </button>
+            </div>
+          </Col>
+        )}
+
+
         {/* Middle section (1:4) */}
-        <Col lg={8} className="border-left border-right border-gray-300">
-          <h2 className="text-3xl font-semibold mb-6 mt-4 text-gray-700">Our Products</h2>
+        <Col lg={8} className="border-left border-right border-gray-300" md={12}>
+          <h2 className="text-3xl text-center font-semibold mb-6 mt-4 text-gray-700">Our Products</h2>
           <Row className="flex flex-wrap">
             {products.map((product) => (
               <Col key={product.productId} md={6} lg={4} className="mb-3 flex">
                 <Link to={`/products/${product.productId}`}>
                   <div
                     className="border p-3 rounded-lg shadow hover:shadow-lg transition duration-300 bg-white product-box flex flex-col"
-                    style={{ height: '360px', width: '390px' }}
+                    style={{ height: '360px', width: '100%' }}
                   >
                     {product.image && (
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-40 object-cover mb-2"
-                        style={{ height: '180px', width: '400px' }}
+                        className="w-full h-full object-cover mb-2"
+                        style={{ height: '180px', width: '440px' }}
                       />
                     )}
                     <h3 className="text-xl font-semibold mb-2 text-gray-700 overflow-hidden overflow-ellipsis">
@@ -133,8 +168,8 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
                           </span>
                         )}
                         &nbsp;  <span className="mr-4 font-semibold">
-                        {Math.ceil(product.discounted_price)}
-                      </span>
+                          {Math.ceil(product.discounted_price)}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -147,10 +182,11 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
         </Col>
 
         {/* Right section (1:4) */}
-        <Col lg={2} className="border-left">
+        <Col lg={2} className="border-left" md={12}>
           <Offer />
         </Col>
       </Row>
+
     </Container>
   );
 };

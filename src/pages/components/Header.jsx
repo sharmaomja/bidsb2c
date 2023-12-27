@@ -17,10 +17,7 @@ import wishlist from '../../assets/wishlist.png';
 import wishlistd from '../../assets/wishlistd.png';
 // import subscription from '../../assets/subscription.png';
 // import auctions from '../../assets/auctions.PNG';
-// import { selectItems } from '../../components/cart/components/cartSlice';
-// import { useSelector } from 'react-redux';
 import { useCart } from '../../contexts/CartContext';
-// import { selectWishlistItems } from '../../components/wishlist/components/wishlistSlice';
 
 const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
     const { cartCount } = useCart();
@@ -40,21 +37,18 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
 
     return (
         <header className="text-white p-3 shadow-md w-full bg-blue-900">
-            <div className="flex justify-between items-center">
-                <div className='flex space-x-6 ml-12'>
+            <div className="flex flex-col sm:flex-row justify-between items-center flex-wrap">
+                <div className={`flex items-center space-x-6 ml-2 sm:ml-12 ${searchTerm ? 'hidden' : 'block'}`}>
                     <Link to="/">
                         <img src={logo} alt="Logo" className="h-8 mr-4" />
                     </Link>
-
                     {user && (
                         <>
-
                         </>
                     )}
                 </div>
 
-
-                <div className="h-12 p-2 rounded-lg justify-center" style={{ width: '660px' }}>
+                <div className="h-12 p-2 rounded-lg w-full sm:w-2/5 lg:w-1/3 xl:w-1/4 mt-2 sm:mt-0 hidden sm:block">
                     <div className="relative flex items-center w-full">
                         <input
                             type="text"
@@ -62,13 +56,12 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            className="p-3 w-full h-8 rounded-md border border-gray-300 focus:border-blue-500 text-gray-700"
+                            className="p-3 w-full h-8 rounded-md border border-gray-300 focus:border-blue-500 text-gray-700 sm:text-base"
                         />
                     </div>
 
-
                 </div>
-                <nav className="flex items-center space-x-6 mr-12">
+                <nav className="flex items-center space-x-6 mt-2 sm:mt-0 sm:mr-10">
                     {user && (
                         <>
                             <Link to="/wishlist" className="relative">
@@ -157,6 +150,18 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                         </Dropdown.Menu>
                     </Dropdown>
                 </nav>
+            </div>
+            <div className="sm:hidden w-full p-2">
+                <div className="relative flex items-center w-full">
+                    <input
+                        type="text"
+                        placeholder="Search products"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="p-3 w-full h-8 rounded-md border border-gray-300 focus:border-blue-500 text-gray-700 sm:text-base"
+                    />
+                </div>
             </div>
         </header>
     );

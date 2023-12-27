@@ -250,8 +250,8 @@ const ProductDetails = () => {
                 contentLabel="Product Image Modal"
                 style={{
                     content: {
-                        width: '650px',
-                        height: '850px',
+                        width: '80%',
+                        height: '85vh',
                         margin: '0 auto',
                         overflow: 'hidden',
                     },
@@ -273,10 +273,11 @@ const ProductDetails = () => {
                 <button onClick={closeModal}>Close</button>
             </Modal>
 
-            <div className='flex flex-center mt-12 ml-24 mr-12'>
 
-                <div className="flex min-w-screen flex-col" style={{ width: "900px", height: "740px" }}>
-                    <div className='flex-1 h-72'>
+
+            <div className='flex flex-col md:flex-row md:justify-center mt-4 md:mt-0 md:ml-24 md:mr-12'>
+                <div className="flex-1 md:min-w-screen md:flex-col" style={{ width: "900px", height: "740px" }}>
+                    <div className='flex-1 md:h-72'>
                         <Carousel>
                             {product &&
                                 product.combinedMedia &&
@@ -312,47 +313,45 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Product info */}
-                <div className='flex p-6 ml-4'>
-                    <div className="max-w-2xl px-4 pb-8 sm:px-6 ">
-                        <div className="lg:col-span-1 lg:pr-2 ">
-                            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.name}</h1>
-                        </div>
-                        <div className="py-10 lg:col-span-2 lg:col-start-1  lg:pb-16 lg:pr-8 lg:pt-6">
-                            <div>
-                                <h3 className="sr-only">Description</h3>
-                                <div className="space-y-6 mt-4">
-                                    <p className="text-base text-gray-900">{product.description}</p>
-                                    <p className="text-base text-gray-900">{product.categoryId}</p>
-                                    <p className="text-base text-gray-900">{product.attributeId}</p>
-
-
-                                </div>
-                            </div>
-                            <div className="mt-4 space-y-6">
-                                <p className="text-sm text-gray-600">{product.details}</p>
-                                <div className="flex items-center">
-                                    <StarRatings
-                                        rating={averageRating}
-                                        starDimension="20px"
-                                        starSpacing="5px"
-                                        starRatedColor="orange"
-                                    />
-                                    <p className="text-lg font-bold ml-2">{averageRating.toFixed(2)} / 5 </p>
-                                </div>
+                <div className='flex-1 p-6 ml-4 md:ml-0'>
+                <div className="max-w-2xl px-4 pb-8 sm:px-6 ">
+                    <div className="lg:col-span-1 lg:pr-2 ">
+                        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.name}</h1>
+                    </div>
+                    <div className="py-10 lg:col-span-2 lg:col-start-1  lg:pb-16 lg:pr-8 lg:pt-6">
+                        <div>
+                            <h3 className="sr-only">Description</h3>
+                            <div className="space-y-6 mt-4">
+                                <p className="text-base text-gray-900">{product.description}</p>
+                                <p className="text-base text-gray-900">{product.category}</p>
+                                <p className="text-base text-gray-900">{product.short_description}</p>
                             </div>
                         </div>
-                        {/* Options */}
-                        <div className="mt-4 lg:row-span-3 lg:mt-0">
-                            <h2 className="sr-only">Product information</h2>
-                            <p className="text-3xl tracking-tight text-gray-900">
-                                <span className='line-through'>₹ {Math.ceil(product.max_price)}</span> &nbsp; ₹ {Math.ceil(product.discounted_price)}
-                                {product.max_price !== product.discounted_price && (
-                                    <span className="text-2xl tracking-tight text-red-500 ml-4">
-                                        Save {(((product.max_price - product.discounted_price) / product.max_price) * 100).toFixed(2)}%
-                                    </span>
-                                )}
-                            </p>
-                            <div className="flex items-center mt-4">
+                        <div className="mt-4 space-y-6">
+                            <p className="text-sm text-gray-600">{product.details}</p>
+                            <div className="flex items-center">
+                                <StarRatings
+                                    rating={averageRating}
+                                    starDimension="20px"
+                                    starSpacing="5px"
+                                    starRatedColor="orange"
+                                />
+                                <p className="text-lg font-bold ml-2">{averageRating.toFixed(2)} / 5 </p>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Options */}
+                    <div className="mt-4 lg:row-span-3 lg:mt-0">
+                        <h2 className="sr-only">Product information</h2>
+                        <p className="text-3xl tracking-tight text-gray-900">
+                            <span className='line-through'>₹ {Math.ceil(product.max_price)}</span> &nbsp; ₹ {Math.ceil(product.discounted_price)}
+                            {product.max_price !== product.discounted_price && (
+                                <span className="text-2xl tracking-tight text-red-500 ml-4">
+                                    Save {(((product.max_price - product.discounted_price) / product.max_price) * 100).toFixed(2)}%
+                                </span>
+                            )}
+                        </p>
+                        <div className="flex items-center mt-4">
                             {secureTransaction && (
                                 <div className="flex items-center mr-4">
                                     <span className="text-green-500 font-semibold">Secure Transaction</span>
@@ -363,7 +362,6 @@ const ProductDetails = () => {
                                     />
                                 </div>
                             )}
-
                             {freeDelivery && (
                                 <div className="flex items-center mr-4">
                                     <span className="text-green-500 font-semibold">Free Delivery</span>
@@ -374,30 +372,27 @@ const ProductDetails = () => {
                                     />
                                 </div>
                             )}
-
                             <div className="flex items-center">
                                 <span className="text-red-600">Estimated Delivery:</span>
                                 <span className="ml-2 text-blue-900">{deliveryTime}</span>
                             </div>
                         </div>
-
-                        </div>
-
-                        <div className='flex space-x-10'>
-                            <button
-                                type="submit"
-                                onClick={handleAddToCart}
-                                className={`mt-10 flex w-96 items-center justify-center rounded-md border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
-                                    }`}
-                            >
-                                {addedToCart ? 'Added to Cart' : 'Add to Cart'}
-                            </button>
+                    </div>
+                    <div className='flex flex-col md:flex-row md:space-x-10'>
+                        <button
+                            type="submit"
+                            onClick={handleAddToCart}
+                            className={`mt-4 md:mt-10 flex w-full md:w-96 items-center justify-center rounded-md border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
+                                }`}
+                        >
+                            {addedToCart ? 'Added to Cart' : 'Add to Cart'}
+                        </button>
 
                             <button
                                 type="submit"
                                 onClick={addToWishlist}
-                                className={`mt-10 flex w-96 items-center justify-center rounded-md border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToWishlist ? 'bg-gray-500 cursor-not-allowed' : ''
-                                    }`}
+                                className={`mt-4 md:mt-10 flex w-full md:w-96 items-center justify-center rounded-md border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
+                            }`}
                             >
                                 {addedToWishlist ? 'Added to Wishlist' : 'Add to Wishlist'}
                             </button>
@@ -407,16 +402,18 @@ const ProductDetails = () => {
                 </div>
             </div>
 
+
+            {/* Recommended products */}
             <h2 className="mt-12 flex justify-center text-xl font-semibold bg-gray-100 text-gray-700">Recommended Products</h2>
-            <div className="mt-8 mr-36 ml-36 p-2">
-                <div className="flex justify-center items-center space-x-24">
+            <div className="mt-8 p-2">
+                <div className="flex flex-col md:flex-row md:justify-center md:space-x-4">
                     {recommendedProducts.map((product, index) => (
-                        <div key={index} className="text-center">
+                        <div key={index} className="text-center mb-4 md:mb-0">
                             <a href={`/products/${product.productId}`}>
                                 <img
                                     src={product.images && product.images.length > 0 ? product.images[0] : 'placeholder-image-url'}
                                     alt={product.name}
-                                    className="object-cover w-96 h-48 rounded-lg"
+                                    className="object-cover w-full h-48 rounded-lg md:w-96"
                                 />
                             </a>
                             <p className="mt-2 text-sm md:text-base lg:text-lg overflow-hidden max-w-96">
@@ -442,15 +439,15 @@ const ProductDetails = () => {
 
             {/* Suggested Products */}
             <h2 className="flex justify-center text-xl font-semibold mt-4 bg-gray-100 text-gray-700">Suggested Products</h2>
-            <div className=" mt-8 mr-36 ml-36">
-                <div className="flex justify-center items-center space-x-24">
+            <div className="mt-8">
+                <div className="flex flex-col md:flex-row md:justify-center md:space-x-4">
                     {suggestedProducts.map((product, index) => (
-                        <div key={index} className="text-center">
+                        <div key={index} className="text-center mb-4 md:mb-0">
                             <a href={`/products/${product.productId}`}>
                                 <img
                                     src={product.images && product.images.length > 0 ? product.images[0] : 'placeholder-image-url'}
                                     alt={product.name}
-                                    className="object-cover w-96 h-48 rounded-lg"
+                                    className="object-cover w-full h-48 rounded-lg md:w-96"
                                 />
                             </a>
                             <p className="mt-2 text-sm md:text-base lg:text-lg overflow-hidden max-w-full">
@@ -476,7 +473,8 @@ const ProductDetails = () => {
 
 
 
-            <div className="flex flex-col ml-24 mt-24 mb-36 w-full">
+
+            <div className="flex flex-col mt-24 mb-36 w-full md:ml-24">
                 <div className="lg:flex lg:space-x-8">
                     {/* Write a Review Section */}
                     <div className="flex-col w-full lg:w-1/3 p-4 bg-white">
