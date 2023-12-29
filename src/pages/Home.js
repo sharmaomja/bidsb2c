@@ -94,35 +94,47 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
     <Container fluid className="p-1">
       <Row>
         {/* Left section (1:4) */}
-        <Col lg={2} className={`border-right border-gray-300 ${showFilters ? 'block' : 'hidden'} md:block`}>
-          <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
-        </Col>
-
+        <Col lg={2} className="border-right border-gray-300 hidden md:block">
+  <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
+</Col>
         {/* Mobile view: Show Filters button */}
         <Col md={12} className="text-center mt-2 md:hidden">
-          <button
-            onClick={toggleFilters}
-            className={`bg-blue-500 text-white px-4 py-2 rounded-full ${showFilters ? 'bg-red-500' : 'hover:bg-blue-600'
-              }`}
-          >
-            {showFilters ? 'Close Filters' : 'Show Filters'}
-          </button>
-        </Col>
-
-        {/* Conditionally render Filters component for mobile view */}
-        {showFilters && (
+        <button
+          onClick={toggleFilters}
+          className={`bg-blue-500 text-white px-4 py-2 rounded-full ${showFilters ? 'bg-red-500' : 'hover:bg-blue-600'
+            }`}
+        >
+          {showFilters ? 'Close Filters' : 'Show Filters'}
+        </button>
+      </Col>
+ 
+      {/* Conditionally render Filters component for mobile view */}
+      {showFilters && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 166,
+            left: 155,
+            right: 20,
+            bottom: 0,
+            zIndex: 999,
+            backdropFilter: 'blur(100px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}
+        >
           <Col lg={2} className="border-right border-gray-300 md:hidden">
             <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
             <div className="text-center mt-2">
               <button
                 onClick={closeFilters}
-                className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600"
+                className="bg-blue-500 text-white px-4 py-2 mr-48 rounded-full hover:bg-blue-600"
               >
                 Close Filters
               </button>
             </div>
           </Col>
-        )}
+        </div>
+      )}
 
 
         {/* Middle section (1:4) */}

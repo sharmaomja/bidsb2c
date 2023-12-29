@@ -84,7 +84,7 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
                 Only Live Auctions
             </div>
             )}
-            <div className="mb-2">
+            <div className="mb-2 w-full">
                 <select
                     onChange={(e) => handleFilterChange('categoryId', e.target.value)}
                     className="p-2 w-full border rounded font-bold"

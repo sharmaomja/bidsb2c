@@ -43,7 +43,6 @@ const ProductDetails = () => {
         setIsModalOpen(false);
     };
 
-
     useEffect(() => {
         const fetchProductDetails = async () => {
             try {

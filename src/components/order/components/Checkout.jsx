@@ -190,8 +190,8 @@ const Checkout = () => {
 
   return (
     <>
-      <div className="mx-auto mt-10 bg-white p-6 rounded-lg shadow-lg" style={{width: '1500px'}}>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div className="mx-auto mt-10 bg-white p-6 rounded-lg shadow-lg" style={{ maxWidth: '1500px' }}>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div>
             <div className="mb-8 flex">
               <h2 className="text-2xl font-semibold mb-4">Add a new address to place an order</h2>
@@ -304,7 +304,6 @@ const Checkout = () => {
 
                   </div>
                 ))}
-
               </div>
             </div>
           </div>

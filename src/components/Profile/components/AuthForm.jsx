@@ -106,32 +106,30 @@ const AuthForm = () => {
     };
 
     return (
-        <div className="flex items-center justify-center pt-36">
-            {isPasswordReset && (
-                <form onSubmit={handlePasswordResetSubmit} className="flex flex-col space-y-4">
-                    {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
-                    {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
-                    <input
-                        type="password"
-                        placeholder="New Password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        required
-                        className="p-2 border border-gray-300 rounded"
-                    />
-                    <button
-                        type="submit"
-                        className="p-2 bg-gradient-to-r from-gray-400 border to-yellow-600 text-black rounded hover:bg-yellow-600 transition duration-300 ease-in-out"
-                    >
-                        Update Password
-                    </button>
-                </form>
-            )}
-
-            <div className="flex items-center justify-center pt-36">
-
+        <div className="mt-48 flex items-center justify-center">
+            <div className="" style={{width:"400px"}}>
+                {isPasswordReset && (
+                    <form onSubmit={handlePasswordResetSubmit} className="bg-blue-50 p-6 rounded-full shadow-lg">
+                        {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
+                        {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
+                        <input
+                            type="password"
+                            placeholder="New Password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            required
+                            className="w-full p-2 mb-4 border border-gray-300 rounded"
+                        />
+                        <button
+                            type="submit"
+                            className="w-full p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition duration-300 ease-in-out"
+                        >
+                            Update Password
+                        </button>
+                    </form>
+                )}
                 {isForgetPassword && (
-                    <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+                    <form onSubmit={handleSubmit} className="bg-blue-50 p-6 rounded-md shadow-lg">
                         {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
                         {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
                         <input
@@ -141,11 +139,11 @@ const AuthForm = () => {
                             value={forgetPasswordEmail}
                             onChange={handleForgetPasswordChange}
                             required
-                            className="p-2 border border-gray-300 rounded"
+                            className="w-full p-2 mb-4 border border-gray-300 rounded"
                         />
                         <button
                             type="submit"
-                            className="p-2 bg-gradient-to-r from-gray-400 border to-yellow-600 text-black rounded hover:bg-yellow-600 transition duration-300 ease-in-out"
+                            className="w-full p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition duration-300 ease-in-out"
                         >
                             Send Reset Link
                         </button>
@@ -159,11 +157,12 @@ const AuthForm = () => {
                 )}
 
                 {!isForgetPassword && (
-                    <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+                    <div className="bg-blue-50 p-8 rounded-lg shadow-lg">
                         <h2 className="text-2xl font-bold mb-4">{isLogin ? 'Login' : 'Register'}</h2>
                         {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
                         {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
                         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+
                             <input
                                 type="email"
                                 name="email"
@@ -206,32 +205,29 @@ const AuthForm = () => {
                             )}
                             <button
                                 type="submit"
-                                className="p-2 bg-gradient-to-r from-gray-400 border to-yellow-600 text-black rounded hover:bg-yellow-600 transition duration-300 ease-in-out"
+                                className="w-full p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition duration-300 ease-in-out"
                             >
                                 {isLogin ? 'Login' : 'Register'}
-
                             </button>
-
                         </form>
-                        <button
-                            onClick={toggleForm}
-                            className="text-blue-500 mt-4 cursor-pointer"
-                        >
+                        <button onClick={toggleForm} className="text-blue-500 mt-4 cursor-pointer">
                             {isLogin ? 'Need an account? Register' : 'Already have an account? Login'}
                         </button>
                     </div>
                 )}
 
-                {!isForgetPassword && isLogin && (
-                    <div className="text-sm">
-                        <button
-                            onClick={() => setIsForgetPassword(true)}
-                            className="font-semibold text-indigo-600 hover:text-indigo-500"
-                        >
-                            Forgot password?
-                        </button>
-                    </div>
-                )}
+                <div>
+                    {!isForgetPassword && isLogin && (
+                        <div className="text-sm mt-4">
+                            <button
+                                onClick={() => setIsForgetPassword(true)}
+                                className="p-2 justify-center bg-blue-500 rounded-full font-semibold text-white"
+                            >
+                                Forgot password?
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

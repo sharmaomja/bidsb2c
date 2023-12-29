@@ -44,6 +44,7 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                     </Link>
                     {user && (
                         <>
+                        
                         </>
                     )}
                 </div>

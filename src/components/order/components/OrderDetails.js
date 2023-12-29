@@ -101,8 +101,8 @@ const UserOrders = () => {
     pageNumbers.push(i);
   }
   return (
-    <div className='bg-gray-50'>
-      <div className="mx-auto mt-4 max-w-7xl px-2 sm:px-6 lg:px-8">
+    <div className="bg-gray-50">
+    <div className="mx-auto mt-4 max-w-7xl px-2 sm:px-6 lg:px-8">
       <div className="mb-4 flex items-center border rounded-full px-4 py-1 bg-gray-300">
       <label htmlFor="searchTerm" className="mr-2 text-black">
       </label>
@@ -117,14 +117,16 @@ const UserOrders = () => {
     </div>
     
 
-        {currentOrders && currentOrders.length > 0 ? (
-          currentOrders.map((order) => {
-            return (
-              <div key={order.orderId} className="border rounded-md overflow-hidden mb-8 bg-white shadow-md">
-                <div className="p-4 bg-gray-200">
-                  <h1 className="text-xl font-bold text-gray-800">Order #: {order.orderId}</h1>
-                  <p className="text-sm text-gray-600">Order Status: {order.orderStatus}</p>
-                </div>
+    {currentOrders && currentOrders.length > 0 ? (
+      currentOrders.map((order) => {
+        return (
+          <div key={order.orderId} className="border rounded-md overflow-hidden mb-8 bg-white shadow-md">
+            {/* Order Header */}
+            <div className="p-4 bg-gray-200">
+              <h1 className="text-xl font-bold text-gray-800">Order #: {order.orderId}</h1>
+              <p className="text-sm text-gray-600">Order Status: {order.orderStatus}</p>
+            </div>
+
                 <div className="p-4">
                   {order.OrderItems && order.OrderItems.length > 0 ? (
                     order.OrderItems.map((item) => {
