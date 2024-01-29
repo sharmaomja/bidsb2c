@@ -27,7 +27,9 @@ const ProductDetails = () => {
     const [suggestedProducts, setSuggestedProducts] = useState([]);
     const [secureTransaction, setSecureTransaction] = useState(false);
     const [freeDelivery, setFreeDelivery] = useState(false);
-    const [deliveryTime, setDeliveryTime] = useState('5-6 days');
+    const [deliveryTime, setDeliveryTime] = useState('');
+    const [pincode, setPincode] = useState('');
+    const [deliveryDate, setDeliveryDate] = useState('');
     const { productId } = useParams();
     const { user } = useAuth();
     const apiBaseURL = process.env.REACT_APP_API_URL;
@@ -115,7 +117,6 @@ const ProductDetails = () => {
         }
     }, [productId, apiBaseURL]);
 
-
     const handleReviewChange = (e) => {
         setNewReview({ ...newReview, [e.target.name]: e.target.value });
     };
@@ -159,7 +160,6 @@ const ProductDetails = () => {
         setRating(0);
         setReviewImages([]); // Clear the selected images after submission
     };
-
 
     const handleAddToCart = async () => {
         console.log('Handle Add to Cart Clicked');
@@ -220,7 +220,6 @@ const ProductDetails = () => {
         }
     };
 
-
     const handleImageChange = async (e) => {
         const selectedFiles = Array.from(e.target.files);
 
@@ -241,6 +240,41 @@ const ProductDetails = () => {
         setVisibleComments((prevVisibleComments) => prevVisibleComments + 5);
     };
 
+    const handlePincodeChange = (e) => {
+        setPincode(e.target.value);
+    };
+
+    const fetchEstimatedDeliveryDate = async () => {
+        try {
+            const response = await axios.get(`${apiBaseURL}/api/delivery-date?pincode=${pincode}`);
+            setDeliveryDate(response.data.estimatedDeliveryDate);
+            calculateDeliveryTime(response.data.distance);
+        } catch (error) {
+            console.error('Error fetching estimated delivery date:', error);
+        }
+    };
+
+    const handleCheckDeliveryDate = () => {
+        if (!pincode) {
+            alert('Please enter a valid pincode.');
+            return;
+        }
+        fetchEstimatedDeliveryDate();
+    };
+
+    const calculateDeliveryTime = (distance) => {
+        let newDeliveryTime;
+
+        if (distance < 500) {
+            newDeliveryTime = '4-5 days';
+        } else if (distance < 1000) {
+            newDeliveryTime = '5-6 days';
+        } else {
+            newDeliveryTime = '6-7 days';
+        }
+        setDeliveryTime(newDeliveryTime);
+    };
+
     return (
         <div className="bg-white flex flex-col min-h-screen">
             <Modal
@@ -249,8 +283,8 @@ const ProductDetails = () => {
                 contentLabel="Product Image Modal"
                 style={{
                     content: {
-                        width: '80%',
-                        height: '85vh',
+                        width: '35%',
+                        height: '70%',
                         margin: '0 auto',
                         overflow: 'hidden',
                     },
@@ -266,132 +300,166 @@ const ProductDetails = () => {
                     <img
                         src={product.combinedMedia[selectedImageIndex].url}
                         alt={`Product media ${selectedImageIndex + 1}`}
-                        className="object-cover w-full h-full"
+                        className=" w-full h-full"
                     />
                 )}
-                <button onClick={closeModal}>Close</button>
+                <button className='bg-red-500 w-20 text-white font-bold' onClick={closeModal}>Close</button>
             </Modal>
 
 
 
-            <div className='flex flex-col md:flex-row md:justify-center mt-4 md:mt-0 md:ml-24 md:mr-12'>
-                <div className="flex-1 md:min-w-screen md:flex-col" style={{ width: "900px", height: "740px" }}>
-                    <div className='flex-1 md:h-72'>
-                        <Carousel>
-                            {product &&
-                                product.combinedMedia &&
-                                product.combinedMedia.reduce((acc, media, index) => {
-                                    if (index % 6 === 0) {
-                                        acc.push([]);
-                                    }
-                                    acc[acc.length - 1].push(media);
-                                    return acc;
-                                }, []).map((mediaGroup, groupIndex) => (
-                                    <Carousel.Item key={groupIndex}>
-                                        <div className="grid grid-cols-4 lg:grid-cols-3 gap-2">
-                                            {mediaGroup.map((media, index) => {
-                                                if (media.type === 'image') {
-                                                    return (
-                                                        <img
-                                                            key={index}
-                                                            src={media.url}
-                                                            alt={`Product media ${groupIndex * 3 + index + 1}`}
-                                                            className="object-cover w-full h-full max-w-full max-h-full cursor-pointer"
-                                                            onClick={() => openModal(groupIndex * 3 + index)}
-                                                        />
-                                                    );
-                                                }
-                                                return null;
-                                            })}
-                                        </div>
-                                    </Carousel.Item>
-                                ))}
-
-                        </Carousel>
+            <div className='flex flex-col md:flex-row md:justify-center mt-3 md:mt-0 md:ml-12 md:mr-12'>
+                <div className='flex flex-col md:flex-row md:justify-center mt-4 md:mt-0 md:ml-12 md:mr-12'>
+                    <div className="flex-1 md:min-w-screen md:flex-col" style={{ width: "900px", height: "740px" }}>
+                        <div className='flex-1 md:h-72'>
+                            <Carousel>
+                                {product &&
+                                    product.combinedMedia &&
+                                    product.combinedMedia.reduce((acc, media, index) => {
+                                        if (index % 6 === 0) {
+                                            acc.push([]);
+                                        }
+                                        acc[acc.length - 1].push(media);
+                                        return acc;
+                                    }, []).map((mediaGroup, groupIndex) => (
+                                        <Carousel.Item key={groupIndex}>
+                                            {/* Use a grid for desktop view */}
+                                            <div className="hidden md:grid grid-cols-4 lg:grid-cols-3 gap-2">
+                                                {mediaGroup.map((media, index) => {
+                                                    if (media.type === 'image') {
+                                                        return (
+                                                            <img
+                                                                key={index}
+                                                                src={media.url}
+                                                                alt={`Product media ${groupIndex * 3 + index + 1}`}
+                                                                className="object-cover cursor-pointer"
+                                                                style={{ width: "350px", height: "350px" }}
+                                                                onClick={() => openModal(groupIndex * 3 + index)}
+                                                            />
+                                                        );
+                                                    }
+                                                    return null;
+                                                })}
+                                            </div>
+                                            {/* Use a 2x2 grid for mobile view */}
+                                            <div className="md:hidden grid grid-cols-1 sm:grid-cols-1 gap-2">
+                                                {mediaGroup.map((media, index) => {
+                                                    if (media.type === 'image' && index < 1) {
+                                                        return (
+                                                            <img
+                                                                key={index}
+                                                                src={media.url}
+                                                                alt={`Product media ${groupIndex * 2 + index + 1}`}
+                                                                className="ml-4 w-full h-full sm:h-64 object-cover cursor-pointer"
+                                                                style={{ width: "460px" }}
+                                                                onClick={() => openModal(groupIndex * 2 + index)}
+                                                            />
+                                                        );
+                                                    }
+                                                    return null;
+                                                })}
+                                            </div>
+                                        </Carousel.Item>
+                                    ))}
+                            </Carousel>
+                        </div>
                     </div>
                 </div>
 
+
                 {/* Product info */}
-                <div className='flex-1 p-6 ml-4 md:ml-0'>
-                <div className="max-w-2xl px-4 pb-8 sm:px-6 ">
-                    <div className="lg:col-span-1 lg:pr-2 ">
-                        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.name}</h1>
-                    </div>
-                    <div className="py-10 lg:col-span-2 lg:col-start-1  lg:pb-16 lg:pr-8 lg:pt-6">
-                        <div>
-                            <h3 className="sr-only">Description</h3>
-                            <div className="space-y-6 mt-4">
-                                <p className="text-base text-gray-900">{product.description}</p>
-                                <p className="text-base text-gray-900">{product.category}</p>
-                                <p className="text-base text-gray-900">{product.short_description}</p>
-                            </div>
+                <div className='flex-1 mt-2 ml-2 md:ml-0'>
+                    <div className="max-w-2xl px-4 pb-8 sm:px-6 ">
+                        <div className="lg:col-span-1 lg:pr-2 ">
+                            <h1 className="text-2xl mt-2 font-bold tracking-tight text-gray-700 sm:text-3xl">{product.name}</h1>
+                            <h1 className="text-xl font-semibold mt-2 tracking-tight text-gray-900 sm:text-2xl">{product.header}</h1>
+
                         </div>
-                        <div className="mt-4 space-y-6">
-                            <p className="text-sm text-gray-600">{product.details}</p>
-                            <div className="flex items-center">
-                                <StarRatings
-                                    rating={averageRating}
-                                    starDimension="20px"
-                                    starSpacing="5px"
-                                    starRatedColor="orange"
-                                />
-                                <p className="text-lg font-bold ml-2">{averageRating.toFixed(2)} / 5 </p>
-                            </div>
-                        </div>
-                    </div>
-                    {/* Options */}
-                    <div className="mt-4 lg:row-span-3 lg:mt-0">
-                        <h2 className="sr-only">Product information</h2>
-                        <p className="text-3xl tracking-tight text-gray-900">
-                            <span className='line-through'>₹ {Math.ceil(product.max_price)}</span> &nbsp; ₹ {Math.ceil(product.discounted_price)}
-                            {product.max_price !== product.discounted_price && (
-                                <span className="text-2xl tracking-tight text-red-500 ml-4">
-                                    Save {(((product.max_price - product.discounted_price) / product.max_price) * 100).toFixed(2)}%
-                                </span>
-                            )}
-                        </p>
-                        <div className="flex items-center mt-4">
-                            {secureTransaction && (
-                                <div className="flex items-center mr-4">
-                                    <span className="text-green-500 font-semibold">Secure Transaction</span>
-                                    <img
-                                        src={securepay}
-                                        alt="Secure Transaction Icon"
-                                        className="ml-2 w-10 h-10"
-                                    />
+                        <div className="py-10 lg:col-span-2 lg:col-start-1 lg:pb-16 lg:pr-8 lg:pt-6">
+                            <div>
+                                <h3 className="sr-only">Description</h3>
+                                <div className="space-y-3 mt-2">
+                                    <p className="text-base text-gray-900">{product.description}</p>
+                                    <p className="text-base text-gray-900">{product.category}</p>
+                                    <p className="text-base text-gray-900">{product.short_description}</p>
                                 </div>
-                            )}
-                            {freeDelivery && (
-                                <div className="flex items-center mr-4">
-                                    <span className="text-green-500 font-semibold">Free Delivery</span>
-                                    <img
-                                        src={freedelivery}
-                                        alt="Free Delivery Icon"
-                                        className="ml-2 w-10 h-10"
+                            </div>
+                            <h2 className="sr-only">Product Attributes</h2>
+                            <div className="mt-2 space-y-1">
+                                {product.ProductAttributes && product.ProductAttributes.map((attribute, index) => (
+                                    <div key={index} className="flex items-center">
+                                        <span className="font-semibold">{attribute.name}:</span>
+                                        <span className="ml-2">{attribute.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-4 space-y-6">
+                                <p className="text-sm text-gray-600">{product.details}</p>
+                                <div className="flex items-center">
+                                    <StarRatings
+                                        rating={averageRating}
+                                        starDimension="25px"
+                                        starSpacing="5px"
+                                        starRatedColor="green"
                                     />
+                                    <p className="text-lg text-green-700 font-bold ml-2">{averageRating.toFixed(2)} / 5 </p>
                                 </div>
-                            )}
-                            <div className="flex items-center">
-                                <span className="text-red-600">Estimated Delivery:</span>
-                                <span className="ml-2 text-blue-900">{deliveryTime}</span>
                             </div>
                         </div>
-                    </div>
-                    <div className='flex flex-col md:flex-row md:space-x-10'>
-                        <button
-                            type="submit"
-                            onClick={handleAddToCart}
-                            className={`mt-4 md:mt-10 flex w-full md:w-96 items-center justify-center rounded-md border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
-                                }`}
-                        >
-                            {addedToCart ? 'Added to Cart' : 'Add to Cart'}
-                        </button>
+                        {/* Options */}
+                        <div className="lg:row-span-3 lg:mt-0">
+                            <h2 className="sr-only">Product information</h2>
+                            <p className="text-3xl tracking-tight text-gray-900">
+                                <span className='line-through'>₹ {Math.ceil(product.max_price)}</span> &nbsp; ₹ {Math.ceil(product.discounted_price)}
+                                {product.max_price !== product.discounted_price && (
+                                    <span className="text-2xl tracking-tight text-red-500 ml-4">
+                                        Save {(((product.max_price - product.discounted_price) / product.max_price) * 100).toFixed(2)}%
+                                    </span>
+                                )}
+                            </p>
+
+                            <div className="flex items-center mt-4">
+                                {secureTransaction && (
+                                    <div className="flex items-center mr-4">
+                                        <span className="text-green-500 font-semibold">Secure Transaction</span>
+                                        <img
+                                            src={securepay}
+                                            alt="Secure Transaction Icon"
+                                            className="ml-2 w-10 h-10"
+                                        />
+                                    </div>
+                                )}
+                                {freeDelivery && (
+                                    <div className="flex items-center mr-4">
+                                        <span className="text-green-500 font-semibold">Free Delivery</span>
+                                        <img
+                                            src={freedelivery}
+                                            alt="Free Delivery Icon"
+                                            className="ml-2 w-10 h-10"
+                                        />
+                                    </div>
+                                )}
+                                <div className="flex items-center">
+                                    <span className="text-red-600">Estimated Delivery:</span>
+                                    <span className="ml-2 text-blue-900">{deliveryTime}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='flex flex-col md:flex-row md:space-x-10'>
+                            <button
+                                type="submit"
+                                onClick={handleAddToCart}
+                                className={`mt-4 md:mt-10 flex w-full md:w-96 items-center justify-center rounded-md border-transparent bg-red-400 px-8 py-3 text-base font-medium text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
+                                    }`}
+                            >
+                                {addedToCart ? 'Added to Cart' : 'Add to Cart'}
+                            </button>
 
                             <button
                                 type="submit"
                                 onClick={addToWishlist}
-                                className={`mt-4 md:mt-10 flex w-full md:w-96 items-center justify-center rounded-md border-transparent bg-green-600 px-8 py-3 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
-                            }`}
+                                className={`mt-4 md:mt-10 flex w-full md:w-96 items-center justify-center rounded-md border-transparent bg-red-400 px-8 py-3 text-base font-medium text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
+                                    }`}
                             >
                                 {addedToWishlist ? 'Added to Wishlist' : 'Add to Wishlist'}
                             </button>
@@ -403,10 +471,11 @@ const ProductDetails = () => {
 
 
             {/* Recommended products */}
-            <h2 className="mt-12 flex justify-center text-xl font-semibold bg-gray-100 text-gray-700">Recommended Products</h2>
+            {/* Recommended Products */}
+            <h2 className="mt-10 flex justify-center text-xl font-semibold bg-blue-50 text-blue-900">Recommended Products</h2>
             <div className="mt-8 p-2">
                 <div className="flex flex-col md:flex-row md:justify-center md:space-x-4">
-                    {recommendedProducts.map((product, index) => (
+                    {recommendedProducts.slice(0, 5).map((product, index) => (
                         <div key={index} className="text-center mb-4 md:mb-0">
                             <a href={`/products/${product.productId}`}>
                                 <img
@@ -437,10 +506,10 @@ const ProductDetails = () => {
             </div>
 
             {/* Suggested Products */}
-            <h2 className="flex justify-center text-xl font-semibold mt-4 bg-gray-100 text-gray-700">Suggested Products</h2>
-            <div className="mt-8">
+            <h2 className="flex justify-center text-xl font-semibold mt-4 bg-blue-50 text-blue-900">Suggested Products</h2>
+            <div className="mt-8 p-2">
                 <div className="flex flex-col md:flex-row md:justify-center md:space-x-4">
-                    {suggestedProducts.map((product, index) => (
+                    {suggestedProducts.slice(0, 5).map((product, index) => (
                         <div key={index} className="text-center mb-4 md:mb-0">
                             <a href={`/products/${product.productId}`}>
                                 <img
@@ -469,8 +538,6 @@ const ProductDetails = () => {
                     ))}
                 </div>
             </div>
-
-
 
 
             <div className="flex flex-col mt-24 mb-36 w-full md:ml-24">
@@ -512,7 +579,7 @@ const ProductDetails = () => {
                         </div>
                         <button
                             onClick={submitReview}
-                            className="bg-green-500 text-white text-lg px-4 py-2 rounded hover:bg-green-400 w-full"
+                            className="bg-teal-500 text-white text-lg px-4 py-2 rounded hover:bg-green-400 w-full"
                         >
                             Submit Review
                         </button>
@@ -603,3 +670,24 @@ const ProductDetails = () => {
 
 export default ProductDetails;
 
+// <div className="mt-4 p-2 bg-blue-50">
+//                                 <h2 className="text-l ml-2 font-semibold mb-1">Check Estimated Delivery Date</h2>
+//                                 <div className="flex ml-2 items-center space-x-4">
+//                                     <input
+//                                         type="text"
+//                                         placeholder="Enter Pincode"
+//                                         value={pincode}
+//                                         onChange={handlePincodeChange}
+//                                         className="border p-2 h-8 w-64"
+//                                     />
+//                                     <button
+//                                         onClick={handleCheckDeliveryDate}
+//                                         className="bg-blue-500 text-white px-6 py-1 rounded-md hover:bg-blue-600"
+//                                     >
+//                                         Check Delivery Date
+//                                     </button>
+//                                 </div>
+//                                 {deliveryDate && (
+//                                     <p className="mt-2">Estimated Delivery Date: {deliveryDate}</p>
+//                                 )}
+//                             </div>

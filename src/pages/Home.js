@@ -63,7 +63,6 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   // }, [onSearchSubmit]);
 
 
-
   const renderPagination = () => {
     let items = [];
     for (let number = 1; number <= totalPages; number++) {
@@ -94,66 +93,68 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
     <Container fluid className="p-1">
       <Row>
         {/* Left section (1:4) */}
-        <Col lg={2} className="border-right border-gray-300 hidden md:block">
-  <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
-</Col>
+        <Col lg={2} className="border-right border-gray-300 hidden md:block" style={{ width: "250px" }}>
+          <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
+        </Col>
+
         {/* Mobile view: Show Filters button */}
         <Col md={12} className="text-center mt-2 md:hidden">
-        <button
-          onClick={toggleFilters}
-          className={`bg-blue-500 text-white px-4 py-2 rounded-full ${showFilters ? 'bg-red-500' : 'hover:bg-blue-600'
-            }`}
-        >
-          {showFilters ? 'Close Filters' : 'Show Filters'}
-        </button>
-      </Col>
- 
-      {/* Conditionally render Filters component for mobile view */}
-      {showFilters && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 166,
-            left: 155,
-            right: 20,
-            bottom: 0,
-            zIndex: 999,
-            backdropFilter: 'blur(100px)',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          }}
-        >
-          <Col lg={2} className="border-right border-gray-300 md:hidden">
-            <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
-            <div className="text-center mt-2">
-              <button
-                onClick={closeFilters}
-                className="bg-blue-500 text-white px-4 py-2 mr-48 rounded-full hover:bg-blue-600"
-              >
-                Close Filters
-              </button>
-            </div>
-          </Col>
-        </div>
-      )}
+          <button
+            onClick={toggleFilters}
+            className={`bg-teal-600 text-white px-4 py-2 rounded-full ${showFilters ? 'bg-teal-600' : 'hover:bg-teal-600'
+              }`}
+          >
+            {showFilters ? 'Close Filters' : 'Show Filters'}
+          </button>
+        </Col>
+
+
+        {/* Conditionally render Filters component for mobile view */}
+        {showFilters && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 166,
+              left: 155,
+              right: 20,
+              bottom: 0,
+              zIndex: 999,
+              backdropFilter: 'blur(100px)',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            }}
+            className='bg-teal-600'
+          >
+            <Col lg={2} className="border-right border-gray-300 md:hidden">
+              <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
+              <div className="text-center mt-2">
+                <button
+                  onClick={closeFilters}
+                  className="bg-teal-500 text-white px-4 py-2 mr-48 rounded-full hover:bg-teal-600"
+                >
+                  Close Filters
+                </button>
+              </div>
+            </Col>
+          </div>
+        )}
 
 
         {/* Middle section (1:4) */}
-        <Col lg={8} className="border-left border-right border-gray-300" md={12}>
-          <h2 className="text-3xl text-center font-semibold mb-6 mt-4 text-gray-700">Our Products</h2>
-          <Row className="flex flex-wrap">
+        <Col lg={8} className="border-left border-right border-gray-300" md={12} style={{width:"1350px"}}>
+          <Row className="flex flex-wrap mt-6">
             {products.map((product) => (
-              <Col key={product.productId} md={6} lg={4} className="mb-3 flex">
+              <Col key={product.productId} md={6} lg={3} className="mb-3 flex">
                 <Link to={`/products/${product.productId}`}>
                   <div
-                    className="border p-3 rounded-lg shadow hover:shadow-lg transition duration-300 bg-white product-box flex flex-col"
-                    style={{ height: '360px', width: '100%' }}
+                    className="border p-2 rounded-lg shadow hover:shadow-lg transition duration-300 bg-white product-box flex flex-col"
+                    style={{ height: '420px', width: '100%' }}
                   >
                     {product.image && (
                       <img
                         src={product.image}
                         alt={product.name}
                         className="w-full h-full object-cover mb-2"
-                        style={{ height: '180px', width: '440px' }}
+                        style={{ height: '280px', width: '100%' }}
                       />
                     )}
                     <h3 className="text-xl font-semibold mb-2 text-gray-700 overflow-hidden overflow-ellipsis">
@@ -166,7 +167,7 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
                       {product.description}
                     </p>
                     <div className="flex mt-auto items-end">
-                      <p className="text-gray-600"> Rating: {product.averageRating ? `${product.averageRating}/5` : 'No ratings'} ⭐ </p>
+                      <p className="text-gray-600 font-semibold">{product.averageRating ? `${product.averageRating}/5` : 'No ratings'} ⭐ </p>
 
                       <p className="text-m mt-1 tracking-tight text-gray-900 ml-auto">
                         {product.max_price !== product.discounted_price && (
@@ -174,14 +175,15 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
                             ₹ {Math.ceil(product.max_price)}
                           </span>
                         )}
-                        {product.max_price !== product.discounted_price && (
-                          <span className="text-m tracking-tight text-red-500 ml-2">
-                            Save {(((product.max_price - product.discounted_price) / product.max_price) * 100).toFixed(2)}%
-                          </span>
-                        )}
-                        &nbsp;  <span className="mr-4 font-semibold">
+                        <span className="font-semibold ml-1">
                           {Math.ceil(product.discounted_price)}
                         </span>
+                        {product.max_price !== product.discounted_price && (
+                          <span className="text-m font-semibold tracking-tight text-red-500 ml-1">
+                            {(((product.max_price - product.discounted_price) / product.max_price) * 100).toFixed(2)}% off
+                          </span>
+                        )}
+
                       </p>
                     </div>
                   </div>

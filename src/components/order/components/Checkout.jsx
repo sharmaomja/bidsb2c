@@ -194,10 +194,10 @@ const Checkout = () => {
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div>
             <div className="mb-8 flex">
-              <h2 className="text-2xl font-semibold mb-4">Add a new address to place an order</h2>
+              <h2 className="text-2xl text-gray-600 font-semibold mb-4">Add a new address to place an order</h2>
               <button
                 onClick={toggleAddAddressForm}
-                className="bg-green-500 text-white p-2 h-10 ml-24 rounded hover:bg-green-600"
+                className="bg-teal-400 text-black p-2 w-48 h-10 ml-24 rounded hover:bg-teal-500"
               >
                 {showAddAddressForm ? 'Hide Form' : 'Add New Address'}
               </button>
@@ -267,7 +267,7 @@ const Checkout = () => {
             <div className="mt-8">
               <button
                 onClick={!isLoading ? handleOrder : null}
-                className={`w-full bg-yellow-500 text-white py-2 rounded-md ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                className={`w-full bg-indigo-400 text-black font-semibold py-2 rounded-md ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
               >
                 {isLoading ? 'Processing...' : 'Place Your Order'}

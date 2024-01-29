@@ -21,13 +21,13 @@ const AddressList = ({ addresses, setAddresses, onEditAddress }) => {
                     <div className="flex justify-full gap-2">
                         <button
                             onClick={() => onEditAddress(address)}
-                            className="bg-blue-600 text-white p-2 w-full rounded-md cursor-pointer text-sm hover:bg-yellow-700"
+                            className="bg-teal-500 text-white p-2 w-full rounded-md cursor-pointer text-sm hover:bg-teal-600"
                         >
                             <span className="before-content">✏️</span> Edit
                         </button>
                         <button
                             onClick={() => handleDeleteAddress(address.addressId)}
-                            className="bg-red-500 text-white p-2 w-full rounded-md cursor-pointer text-sm hover:bg-red-700"
+                            className="bg-red-500 text-white p-2 w-full rounded-md cursor-pointer text-sm hover:bg-red-600"
                         >
                             <span className="before-content">🗑</span> Delete
                         </button>

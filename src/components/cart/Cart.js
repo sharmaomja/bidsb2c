@@ -218,7 +218,7 @@ const Cart = () => {
             <div className="mt-6">
               <Link
                 to="/checkout"
-                className="block w-full bg-indigo-600 text-white rounded-md py-2 text-center font-medium hover:bg-indigo-700"
+                className="block w-full bg-indigo-400 text-white rounded-md py-2 text-center font-medium hover:bg-indigo-700"
               >
                 Proceed to Checkout
               </Link>
@@ -252,7 +252,7 @@ const Cart = () => {
                   />
                   <button
                     onClick={applyCoupon}
-                    className="mt-2 w-full bg-green-500 text-white rounded-md py-2 text-center font-medium hover:bg-green-600"
+                    className="mt-2 w-full bg-teal-400 text-black rounded-md py-2 text-center font-medium hover:bg-teal-500"
                   >
                     Apply Coupon
                   </button>
@@ -266,7 +266,7 @@ const Cart = () => {
             <div className="mt-6">
               <Link
                 to="/checkout"
-                className="block w-full bg-indigo-600 text-white rounded-md py-2 text-center font-medium hover:bg-indigo-700"
+                className="block w-full bg-indigo-400 text-black rounded-md py-2 text-center font-medium hover:bg-indigo-500"
               >
                 Proceed to Checkout
               </Link>
