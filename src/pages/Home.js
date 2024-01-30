@@ -93,7 +93,11 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
     <Container fluid className="p-1">
       <Row>
         {/* Left section (1:4) */}
+<<<<<<< HEAD
+        <Col lg={2} className="border-right border-gray-300 hidden md:block" style={{width:"250px"}}>
+=======
         <Col lg={2} className="border-right border-gray-300 hidden md:block" style={{ width: "250px" }}>
+>>>>>>> cb8b3b1c5b19b25326c8a72c36b8840a29eeb4b9
           <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
         </Col>
 
@@ -140,7 +144,11 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
 
 
         {/* Middle section (1:4) */}
+<<<<<<< HEAD
+        <Col lg={8} className="border-left border-right border-gray-300" md={12}>
+=======
         <Col lg={8} className="border-left border-right border-gray-300" md={12} style={{width:"1350px"}}>
+>>>>>>> cb8b3b1c5b19b25326c8a72c36b8840a29eeb4b9
           <Row className="flex flex-wrap mt-6">
             {products.map((product) => (
               <Col key={product.productId} md={6} lg={3} className="mb-3 flex">
