@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import { useAuth } from '../../contexts/AuthContext';
@@ -35,11 +35,14 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
         navigate('/');
     };
 
+    const location = useLocation();
+    const isHomePage = location.pathname === '/';
+
     return (
         <div>
             <header className="text-white p-2 shadow-md w-full bg-yellow-400">
                 <div className="flex flex-col sm:flex-row justify-between items-center flex-wrap">
-                    <div className={`flex items-center space-x-6 ml-2 sm:ml-12 ${searchTerm ? 'hidden' : 'block'}`}>
+                    <div className={`flex items-center space-x-6 ml-2 sm:ml-12 ${searchTerm}`}>
                         <div className="text-2xl font-bold underline text-teal-800">
                             <Link to="/">BIDSB2C</Link>
                         </div>
@@ -50,19 +53,19 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                         )}
                     </div>
 
-                    <div className="h-12 p-2 rounded-lg w-full sm:w-2/5 lg:w-1/3 xl:w-1/4 mt-2 sm:mt-0 hidden sm:block">
-                        <div className="relative flex items-center w-full">
-                            <input
-                                type="text"
-                                placeholder="Search products"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                className="p-3 w-full h-8 rounded-md border border-gray-300 focus:border-blue-500 text-gray-700 sm:text-base"
-                            />
-                        </div>
-
+                    <div className={`h-12 p-2 rounded-lg w-full sm:w-2/5 lg:w-1/3 xl:w-1/4 mt-2 sm:mt-0 ${isHomePage ? '' : 'hidden'}`}>
+                    <div className="relative flex items-center w-full">
+                        <input
+                            type="text"
+                            placeholder="Search products"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            className="p-3 w-full h-8 rounded-md border border-gray-300 focus:border-blue-500 text-gray-700 sm:text-base"
+                        />
                     </div>
+                </div>
+                
                     <nav className="flex items-center space-x-6 mt-2 sm:mt-0 sm:mr-10">
                         {user && (
                             <>

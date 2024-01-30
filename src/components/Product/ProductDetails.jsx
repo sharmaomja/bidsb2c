@@ -49,7 +49,6 @@ const ProductDetails = () => {
         const fetchProductDetails = async () => {
             try {
                 const response = await axios.get(`${apiBaseURL}/api/products/${productId}`);
-                console.log("Product Response:", response.data);
                 if (response.data) {
                     const combinedMedia = [
                         ...response.data.images.map(image => ({ type: 'image', url: image })),
@@ -174,9 +173,6 @@ const ProductDetails = () => {
             try {
                 const cartResponse = await axios.get(`${apiBaseURL}/api/shopping-cart/${user.userId}`);
                 cartId = cartResponse.data.cartId;
-                console.log('Cart ID:', cartId);
-                console.log('Item added to cart successfully');
-
             } catch (error) {
                 if (error.response && error.response.status === 404) {
                     const newCartResponse = await axios.post(`${apiBaseURL}/api/shopping-cart`, { userId: user.userId });
@@ -469,8 +465,6 @@ const ProductDetails = () => {
                 </div>
             </div>
 
-
-            {/* Recommended products */}
             {/* Recommended Products */}
             <h2 className="mt-10 flex justify-center text-xl font-semibold bg-blue-50 text-blue-900">Recommended Products</h2>
             <div className="mt-8 p-2">
