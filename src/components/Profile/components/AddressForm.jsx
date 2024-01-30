@@ -190,7 +190,7 @@ const AddressForm = ({ userId, sessionId, setAddresses, editingAddress, setEditi
                 <option value="billing">Billing</option>
             </select>
 
-            <button type="submit" className="bg-blue-800 text-white p-1 rounded-md cursor-pointer text-xl hover:bg-blue-500">
+            <button type="submit" className="bg-teal-700 text-white p-1 rounded-md cursor-pointer text-xl hover:bg-teal-800">
                 {editingAddress ? 'Update Address' : 'Add Address'}
             </button>
             {message && <p>{message}</p>}

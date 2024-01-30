@@ -63,7 +63,6 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   // }, [onSearchSubmit]);
 
 
-
   const renderPagination = () => {
     let items = [];
     for (let number = 1; number <= totalPages; number++) {
@@ -94,53 +93,55 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
     <Container fluid className="p-1">
       <Row>
         {/* Left section (1:4) */}
-        <Col lg={2} className="border-right border-gray-300 hidden md:block">
-  <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
-</Col>
+        <Col lg={2} className="border-right border-gray-300 hidden md:block" style={{width:"250px"}}>
+          <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
+        </Col>
+
         {/* Mobile view: Show Filters button */}
         <Col md={12} className="text-center mt-2 md:hidden">
-        <button
-          onClick={toggleFilters}
-          className={`bg-blue-500 text-white px-4 py-2 rounded-full ${showFilters ? 'bg-red-500' : 'hover:bg-blue-600'
-            }`}
-        >
-          {showFilters ? 'Close Filters' : 'Show Filters'}
-        </button>
-      </Col>
- 
-      {/* Conditionally render Filters component for mobile view */}
-      {showFilters && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 166,
-            left: 155,
-            right: 20,
-            bottom: 0,
-            zIndex: 999,
-            backdropFilter: 'blur(100px)',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          }}
-        >
-          <Col lg={2} className="border-right border-gray-300 md:hidden">
-            <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
-            <div className="text-center mt-2">
-              <button
-                onClick={closeFilters}
-                className="bg-blue-500 text-white px-4 py-2 mr-48 rounded-full hover:bg-blue-600"
-              >
-                Close Filters
-              </button>
-            </div>
-          </Col>
-        </div>
-      )}
+          <button
+            onClick={toggleFilters}
+            className={`bg-teal-600 text-white px-4 py-2 rounded-full ${showFilters ? 'bg-teal-600' : 'hover:bg-teal-600'
+              }`}
+          >
+            {showFilters ? 'Close Filters' : 'Show Filters'}
+          </button>
+        </Col>
+
+
+        {/* Conditionally render Filters component for mobile view */}
+        {showFilters && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 166,
+              left: 155,
+              right: 20,
+              bottom: 0,
+              zIndex: 999,
+              backdropFilter: 'blur(100px)',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            }}
+            className='bg-teal-600'
+          >
+            <Col lg={2} className="border-right border-gray-300 md:hidden">
+              <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
+              <div className="text-center mt-2">
+                <button
+                  onClick={closeFilters}
+                  className="bg-teal-500 text-white px-4 py-2 mr-48 rounded-full hover:bg-teal-600"
+                >
+                  Close Filters
+                </button>
+              </div>
+            </Col>
+          </div>
+        )}
 
 
         {/* Middle section (1:4) */}
         <Col lg={8} className="border-left border-right border-gray-300" md={12}>
-          <h2 className="text-3xl text-center font-semibold mb-6 mt-4 text-gray-700">Our Products</h2>
-          <Row className="flex flex-wrap">
+          <Row className="flex flex-wrap mt-6">
             {products.map((product) => (
               <Col key={product.productId} md={6} lg={4} className="mb-3 flex">
                 <Link to={`/products/${product.productId}`}>

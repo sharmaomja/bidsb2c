@@ -70,7 +70,7 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
     };
     
     return (
-        <aside className="p-4 w-64 mt-2">
+        <aside className="p-4 w-64">
             <h3 className="text-2xl font-semibold mb-4">Filters</h3>
             {showLiveAuctionFilter && (
             <div className="mb-4 font-semibold">
@@ -109,7 +109,7 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
                     </select>
                 </div>
             ))}
-            <button onClick={applyFilters} className="bg-green-600 text-white p-2 rounded hover:bg-blue-700 w-full">
+            <button onClick={applyFilters} className="bg-teal-600 text-white p-2 rounded hover:bg-blue-700 w-full">
                 Apply Filters
             </button>
         </aside>
