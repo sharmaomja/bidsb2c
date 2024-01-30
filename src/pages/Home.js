@@ -93,7 +93,11 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
     <Container fluid className="p-1">
       <Row>
         {/* Left section (1:4) */}
+<<<<<<< HEAD
         <Col lg={2} className="border-right border-gray-300 hidden md:block" style={{width:"250px"}}>
+=======
+        <Col lg={2} className="border-right border-gray-300 hidden md:block" style={{ width: "250px" }}>
+>>>>>>> cb8b3b1c5b19b25326c8a72c36b8840a29eeb4b9
           <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
         </Col>
 
@@ -140,21 +144,25 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
 
 
         {/* Middle section (1:4) */}
+<<<<<<< HEAD
         <Col lg={8} className="border-left border-right border-gray-300" md={12}>
+=======
+        <Col lg={8} className="border-left border-right border-gray-300" md={12} style={{width:"1350px"}}>
+>>>>>>> cb8b3b1c5b19b25326c8a72c36b8840a29eeb4b9
           <Row className="flex flex-wrap mt-6">
             {products.map((product) => (
-              <Col key={product.productId} md={6} lg={4} className="mb-3 flex">
+              <Col key={product.productId} md={6} lg={3} className="mb-3 flex">
                 <Link to={`/products/${product.productId}`}>
                   <div
-                    className="border p-3 rounded-lg shadow hover:shadow-lg transition duration-300 bg-white product-box flex flex-col"
-                    style={{ height: '360px', width: '100%' }}
+                    className="border p-2 rounded-lg shadow hover:shadow-lg transition duration-300 bg-white product-box flex flex-col"
+                    style={{ height: '420px', width: '100%' }}
                   >
                     {product.image && (
                       <img
                         src={product.image}
                         alt={product.name}
                         className="w-full h-full object-cover mb-2"
-                        style={{ height: '180px', width: '440px' }}
+                        style={{ height: '280px', width: '100%' }}
                       />
                     )}
                     <h3 className="text-xl font-semibold mb-2 text-gray-700 overflow-hidden overflow-ellipsis">
@@ -167,7 +175,7 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
                       {product.description}
                     </p>
                     <div className="flex mt-auto items-end">
-                      <p className="text-gray-600"> Rating: {product.averageRating ? `${product.averageRating}/5` : 'No ratings'} ⭐ </p>
+                      <p className="text-gray-600 font-semibold">{product.averageRating ? `${product.averageRating}/5` : 'No ratings'} ⭐ </p>
 
                       <p className="text-m mt-1 tracking-tight text-gray-900 ml-auto">
                         {product.max_price !== product.discounted_price && (
@@ -175,14 +183,15 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
                             ₹ {Math.ceil(product.max_price)}
                           </span>
                         )}
-                        {product.max_price !== product.discounted_price && (
-                          <span className="text-m tracking-tight text-red-500 ml-2">
-                            Save {(((product.max_price - product.discounted_price) / product.max_price) * 100).toFixed(2)}%
-                          </span>
-                        )}
-                        &nbsp;  <span className="mr-4 font-semibold">
+                        <span className="font-semibold ml-1">
                           {Math.ceil(product.discounted_price)}
                         </span>
+                        {product.max_price !== product.discounted_price && (
+                          <span className="text-m font-semibold tracking-tight text-red-500 ml-1">
+                            {(((product.max_price - product.discounted_price) / product.max_price) * 100).toFixed(2)}% off
+                          </span>
+                        )}
+
                       </p>
                     </div>
                   </div>
