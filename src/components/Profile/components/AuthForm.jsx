@@ -89,7 +89,7 @@ const AuthForm = () => {
                         // You might want to store user's ID or email to use in handlePasswordResetSubmit
                     } else {
                         login(response.data, response.data.sessionId);
-                        navigate('/');
+                        navigate('/bidsb2c');
                     }
                 } else {
                     setSuccessMessage('Registration successful. Redirecting to login...');
@@ -106,10 +106,10 @@ const AuthForm = () => {
     };
 
     return (
-        <div className="mt-48 flex items-center justify-center">
-            <div className="" style={{width:"400px"}}>
+        <div className="flex items-center justify-center h-screen bg-gray-200">
+            <div className="" style={{ width: "400px" }}>
                 {isPasswordReset && (
-                    <form onSubmit={handlePasswordResetSubmit} className="bg-blue-50 p-6 rounded-full shadow-lg">
+                    <form onSubmit={handlePasswordResetSubmit} className="bg-gray-50 p-6 rounded-full shadow-lg">
                         {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
                         {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
                         <input
@@ -157,7 +157,7 @@ const AuthForm = () => {
                 )}
 
                 {!isForgetPassword && (
-                    <div className="bg-blue-50 p-8 rounded-lg shadow-lg">
+                    <div className="bg-gray-50 p-8 rounded-lg shadow-lg">
                         <h2 className="text-2xl font-bold mb-4">{isLogin ? 'Login' : 'Register'}</h2>
                         {successMessage && <div className="text-green-500 mb-4">{successMessage}</div>}
                         {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
@@ -205,7 +205,7 @@ const AuthForm = () => {
                             )}
                             <button
                                 type="submit"
-                                className="w-full p-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition duration-300 ease-in-out"
+                                className="w-full p-2 bg-yellow-400 font-semibold text-black rounded hover:bg-yellow-500 transition duration-300 ease-in-out"
                             >
                                 {isLogin ? 'Login' : 'Register'}
                             </button>
@@ -221,7 +221,7 @@ const AuthForm = () => {
                         <div className="text-sm mt-4">
                             <button
                                 onClick={() => setIsForgetPassword(true)}
-                                className="p-2 justify-center bg-blue-500 rounded-full font-semibold text-white"
+                                className="p-2 justify-center w-full bg-red-400 rounded-full font-semibold text-white"
                             >
                                 Forgot password?
                             </button>

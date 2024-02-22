@@ -2,12 +2,12 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import profile from '../../assets/profile.gif';
-
 import AddressList from './components/AddressList';
 import AddressForm from './components/AddressForm';
 
 const Profile = () => {
   const { user, sessionId } = useAuth();
+  const [profileData, setProfileData] = useState({});
   const [addresses, setAddresses] = useState([]);
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
@@ -34,6 +34,8 @@ const Profile = () => {
       const response = await axios.get(`${apiBaseURL}/users/${userId}`, config);
       const userData = response.data;
 
+      // Set the received user data in the state
+      setProfileData(userData);
       // Log the received user data for debugging
       console.log('Received User Data:', userData);
       console.log('Setting uploaded profile picture:', userData?.UserProfilePicture?.imagePath);
@@ -75,11 +77,7 @@ const Profile = () => {
   const handleProfilePictureChange = (event) => {
     const file = event.target.files[0];
     setProfilePicture(file);
-
-    // Set the uploaded profile picture for preview
     setUploadedProfilePicture(URL.createObjectURL(file));
-
-    // Call updateProfile immediately after selecting a file
     updateProfile(file);
   };
 
@@ -88,9 +86,6 @@ const Profile = () => {
       const formData = new FormData();
       formData.append('profilePicture', file);
       console.log(formData);
-
-      // Add other profile information to formData if needed
-
       const response = await axios.post(
         `${apiBaseURL}/users/upload-profile-picture/${user.userId}`,
         formData,
@@ -101,14 +96,8 @@ const Profile = () => {
           },
         }
       );
-
-      // Assuming the response contains the updated user data including the profile picture path
       const updatedUser = response.data;
-
-
-      // Update the uploaded profile picture path
       setUploadedProfilePicture(updatedUser.imagePath);
-
       console.log('Profile updated:', updatedUser);
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -124,9 +113,8 @@ const Profile = () => {
   };
 
   const calculateTotalPrice = () => {
-    // Calculate total price based on selected coins option or custom coins
-    const pricePerCoin = 1; // Replace with the actual price per coin
-    const gstPercentage = 18; // GST percentage
+    const pricePerCoin = 1; 
+    const gstPercentage = 18; 
 
     let totalCoins = coinsToBuy;
     if (customCoins && !isNaN(customCoins)) {
@@ -199,7 +187,7 @@ const Profile = () => {
             {`${user.firstName} ${user.lastName}`}
           </h1>
           <h3 className="text-l sm:text-xl font-semibold text-gray-700">
-            {`${user.email}`}
+            {`${profileData.email}`}
           </h3>
         </div>
       </div>

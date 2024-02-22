@@ -20,7 +20,7 @@ const EmptyCart = () => {
           </p>
           <div className="flex items-center justify-center">
             <Link
-              to="/"
+              to="/bidsb2c"
               className="rounded-md bg-yellow-500 px-6 py-3 text-lg font-semibold text-white shadow-md hover:bg-yellow-400 focus:outline-none focus:ring focus:border-blue-300"
             >
               Continue Shopping on BidsB2C

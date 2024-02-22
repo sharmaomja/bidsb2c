@@ -20,7 +20,7 @@ const EmptyWishlist = () => {
           </p>
           <div className="mt-6 flex items-center justify-center gap-x-6">
             <Link
-              to="/"
+              to="/bidsb2c"
               className="rounded-md bg-yellow-400 px-6 py-3 text-base font-semibold text-gray-900 shadow-md hover:bg-yellow-300 focus:outline-none focus:ring focus:border-blue-300"
             >
               Continue Shopping on BidsB2C

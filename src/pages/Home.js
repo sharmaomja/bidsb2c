@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
 import Filters from './components/Filters';
-import { Container, Row, Col, Pagination } from 'react-bootstrap';
-import AuctionComponent from './components/Auction';
-import Offer from './components/Offer';
+import { Container, Row, Col, Pagination, Button} from 'react-bootstrap';
+import Offer from '../components/xyz/Offer';
 
 const Home = ({ searchTerm, onSearchSubmit }) => {
   const [products, setProducts] = useState([]);
@@ -14,14 +12,14 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   const apiBaseURL = process.env.REACT_APP_API_URL;
   const [limit, setLimit] = useState(9);
   const [showFilters, setShowFilters] = useState(false);
+  const [sortByRating, setSortByRating] = useState('desc');
+  const [sortByPrice, setSortByPrice] = useState('asc');
 
   const fetchProducts = async () => {
     try {
       const queryParams = new URLSearchParams();
-      // Append page and limit directly
       queryParams.append('page', currentPage);
       queryParams.append('limit', limit);
-      // Append other filters
       Object.entries(filters).forEach(([key, value]) => {
         if (value && value !== '') {
           queryParams.append(key, value);
@@ -47,7 +45,15 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   // useEffect(() => {
   //   fetchProducts();
   // }, [filters, currentPage]);
+  const handleSortByRating = (sortOrder) => {
+    setSortByRating(sortOrder);
+    fetchProducts();
+  };
 
+  const handleSortByPrice = (sortOrder) => {
+    setSortByPrice(sortOrder);
+    fetchProducts();
+  };
   const handleApplyFilters = (newFilters) => {
     setFilters(newFilters);
     setCurrentPage(1);
@@ -61,7 +67,6 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   //     fetchProducts(searchTerm);
   //   }
   // }, [onSearchSubmit]);
-
 
   const renderPagination = () => {
     let items = [];
@@ -92,8 +97,15 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   return (
     <Container fluid className="p-1">
       <Row>
+        <Col md={12} className="text-center text-black bg-yellow-50 py-2">
+          <div className="overflow-x-auto h-6 bg-yellow-100 text-md font-semibold">
+            <marquee className="whitespace-nowrap" direction="right" scrollamount="8">
+              Check out our latest auctions and grab amazing deals! <a href="/auctions">Click here to start bidding now!</a>
+            </marquee>
+          </div>
+        </Col>
         {/* Left section (1:4) */}
-        <Col lg={2} className="border-right border-gray-300 hidden md:block" style={{ width: "250px" }}>
+        <Col lg={2} className="border-right border-gray-300 hidden md:block" style={{ width: "15%" }}>
           <Filters searchTerm={searchTerm} onApplyFilters={handleApplyFilters} />
         </Col>
 
@@ -108,7 +120,6 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
           </button>
         </Col>
 
-
         {/* Conditionally render Filters component for mobile view */}
         {showFilters && (
           <div
@@ -119,7 +130,7 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
               right: 20,
               bottom: 0,
               zIndex: 999,
-              backdropFilter: 'blur(100px)',
+              backdropFilter: 'blur(30px)',
               backgroundColor: 'rgba(0, 0, 0, 0.5)',
             }}
             className='bg-teal-600'
@@ -138,9 +149,16 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
           </div>
         )}
 
-
         {/* Middle section (1:4) */}
-        <Col lg={8} className="border-left border-right border-gray-300" md={12} style={{width:"1350px"}}>
+        <Col lg={8} className="border-left border-right border-gray-300" md={12} style={{ width: "70%" }}>
+        <div className="d-flex justify-content-end mb-2 mt-3">
+        <div className="space-x-3">
+          <Button variant="outline-primary" className="p-1 bg-yellow-100 font-semibold shadow-md text-gray-700 border border-yellow-400 hover:bg-yellow-600" onClick={() => handleSortByRating('desc')}>What's New</Button>
+          <Button variant="outline-primary" className="p-1 bg-yellow-100 font-semibold shadow-md text-gray-700 border border-yellow-400 hover:bg-yellow-600" onClick={() => handleSortByRating('desc')}>Customer Rating</Button>
+          <Button variant="outline-primary" className="p-1 bg-yellow-100 font-semibold shadow-md text-gray-700 border border-yellow-400 hover:bg-yellow-600" onClick={() => handleSortByPrice('asc')}>Sort by Price: Low to High</Button>
+          <Button variant="outline-primary" className="p-1 bg-yellow-100 font-semibold shadow-md text-gray-700 border border-yellow-400 hover:bg-yellow-600" onClick={() => handleSortByPrice('desc')}>Sort by Price: High to Low</Button>
+        </div>
+      </div>
           <Row className="flex flex-wrap mt-6">
             {products.map((product) => (
               <Col key={product.productId} md={6} lg={3} className="mb-3 flex">
@@ -206,3 +224,4 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
 };
 
 export default Home;
+

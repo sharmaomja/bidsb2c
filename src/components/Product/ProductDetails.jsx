@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
-
 import { useAuth } from '../../hooks/useAuth';
 import { useParams } from 'react-router-dom';
 import { Carousel } from 'react-bootstrap';
 import StarRatings from 'react-star-ratings';
-// import ChatbotButton from './chatbot/chatbotbutton'
 import { useCart } from '../../contexts/CartContext';
 import securepay from '../../assets/securepay.png';
 import freedelivery from '../../assets/freedelivery.png';
-
 
 const ProductDetails = () => {
     const [product, setProduct] = useState(null);
@@ -30,11 +27,12 @@ const ProductDetails = () => {
     const [deliveryTime, setDeliveryTime] = useState('');
     const [pincode, setPincode] = useState('');
     const [deliveryDate, setDeliveryDate] = useState('');
+    const [showMore, setShowMore] = useState(false);
     const { productId } = useParams();
     const { user } = useAuth();
-    const apiBaseURL = process.env.REACT_APP_API_URL;
     const { fetchCartCount } = useCart();
-
+    const apiBaseURL = process.env.REACT_APP_API_URL;
+    
     const openModal = (index) => {
         setSelectedImageIndex(index);
         setIsModalOpen(true);
@@ -223,6 +221,10 @@ const ProductDetails = () => {
         setReviewImages(selectedFiles);
     };
 
+    const toggleShowMore = () => {
+        setShowMore(!showMore);
+    };
+
     if (!product) {
         return <div className="loading">Loading...</div>;
     }
@@ -272,7 +274,7 @@ const ProductDetails = () => {
     };
 
     return (
-        <div className="bg-white flex flex-col min-h-screen">
+        <div className="bg-white flex flex-col min-h-screen min-w-screen">
             <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
@@ -301,8 +303,6 @@ const ProductDetails = () => {
                 )}
                 <button className='bg-red-500 w-20 text-white font-bold' onClick={closeModal}>Close</button>
             </Modal>
-
-
 
             <div className='flex flex-col md:flex-row md:justify-center mt-3 md:mt-0 md:ml-12 md:mr-12'>
                 <div className='flex flex-col md:flex-row md:justify-center mt-4 md:mt-0 md:ml-12 md:mr-12'>
@@ -362,7 +362,6 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-
                 {/* Product info */}
                 <div className='flex-1 mt-2 ml-2 md:ml-0'>
                     <div className="max-w-2xl px-4 pb-8 sm:px-6 ">
@@ -375,9 +374,19 @@ const ProductDetails = () => {
                             <div>
                                 <h3 className="sr-only">Description</h3>
                                 <div className="space-y-3 mt-2">
-                                    <p className="text-base text-gray-900">{product.description}</p>
                                     <p className="text-base text-gray-900">{product.category}</p>
                                     <p className="text-base text-gray-900">{product.short_description}</p>
+                                    <p className="text-base text-gray-900">
+                                        {showMore ? product.description : `${product.description.slice(0, 300)}...`}
+                                    </p>
+                                    {product.description.length > 500 && (
+                                        <button
+                                            onClick={toggleShowMore}
+                                            className="text-indigo-500 underline focus:outline-none"
+                                        >
+                                            {showMore ? 'See less' : 'See more'}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                             <h2 className="sr-only">Product Attributes</h2>
@@ -445,7 +454,7 @@ const ProductDetails = () => {
                             <button
                                 type="submit"
                                 onClick={handleAddToCart}
-                                className={`mt-4 md:mt-10 flex w-full md:w-96 items-center justify-center rounded-md border-transparent bg-red-400 px-8 py-3 text-base font-medium text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
+                                className={`mt-4 md:mt-10 flex w-full md:w-96 h-12 items-center justify-center rounded-md border-transparent bg-red-400 px-8 py-3 text-base font-medium text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
                                     }`}
                             >
                                 {addedToCart ? 'Added to Cart' : 'Add to Cart'}
@@ -454,7 +463,7 @@ const ProductDetails = () => {
                             <button
                                 type="submit"
                                 onClick={addToWishlist}
-                                className={`mt-4 md:mt-10 flex w-full md:w-96 items-center justify-center rounded-md border-transparent bg-red-400 px-8 py-3 text-base font-medium text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
+                                className={`mt-4 md:mt-10 flex w-full md:w-96 h-12 items-center justify-center rounded-md border-transparent bg-red-400 px-8 py-3 text-base font-medium text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${addedToCart ? 'bg-gray-500 cursor-not-allowed' : ''
                                     }`}
                             >
                                 {addedToWishlist ? 'Added to Wishlist' : 'Add to Wishlist'}

@@ -16,40 +16,33 @@ import {
   BarController
 } from 'chart.js';
 
-
-
 import Home from './pages/Home';
 import Returns from './components/order/components/Returns';
 import Checkout from './components/order/components/Checkout';
 import Cart from './components/cart/Cart';
 import Header from './pages/components/Header';
-
 import Profile from './components/Profile/Profile';
 import AuthForm from './components/Profile/components/AuthForm';
 import ProductDetails from './components/Product/ProductDetails';
 import Forgetpassword from './components/Profile/components/Forget-password';
 import Payment from './components/order/components/PaymentPage'
 import OrderSuccess from './components/order/components/OrderSuccess'
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import WishList from './components/wishlist/Wishlist';
 import UserOrders from './components/order/components/OrderDetails';
-
 // Import Redux components and hooks
 import { Provider } from 'react-redux';
 import store from './contexts/store';
 import {  selectItems as selectCart } from './components/cart/components/cartSlice';
 import { selectWishlistItems as selectWishlist } from './components/wishlist/components/wishlistSlice';
-import { selectOrders } from './components/order/components/orderSlice';
 import { OrderProvider } from './contexts/OrderContext';
-import AuctionDetails from './pages/components/AuctionDetails';
 import AuctionsPage from './components/auction/MainAuctionPage';
 import EmptyCart from './components/cart/components/emptycart';
 import { CartProvider } from './contexts/CartContext'; 
-import AuctionAnalyticsDashboard from './components/auction/AuctionAnalyticsDashboard';
 import ShipmentTrackingPage from './components/order/components/Shippment-tracking';
 import Help from './pages/components/Help';
 import EmptyWishlist from './components/wishlist/components/emptywishlist';
+import AuctionProductDetails from './components/auction/AuctionProductdetails';
 
 ChartJS.register(
   CategoryScale,
@@ -81,7 +74,7 @@ const App = () => {
                 <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} onSearch={onSearch} />
                 {/*<Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} onSearch={onSearch} />*/}
                 <Routes>
-                  <Route path="/" element={<Home searchTerm={searchTerm} onSearch={onSearch}/>} />
+                  <Route path="/bidsb2c" element={<Home searchTerm={searchTerm} onSearch={onSearch}/>} />
                   <Route path="/auth" element={<AuthForm />} />
                   <Route path="/help" element={<Help />} />
                   <Route path="/profile" element={<Profile />} />
@@ -96,8 +89,7 @@ const App = () => {
                   {/* Pass Redux state to the UserOrders component */}
                   <Route path="/orders" element={<UserOrders />} />
                   <Route path="/auctions" element={<AuctionsPage />} />
-                  <Route path="/analytics-dashboard" element={<AuctionAnalyticsDashboard />} />
-                  <Route path="/auctions/:auctionId" element={<AuctionDetails />} />
+                  <Route path="/auction-products/:productId/:auctionId" element={<AuctionProductDetails/>} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/payment" element={<Payment />} />
                   <Route path="/order-success" element={<OrderSuccess />} />

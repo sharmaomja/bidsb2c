@@ -183,7 +183,7 @@ const handleTrackOrder = (order) => {
                             </div>
                           ) : (
                             <>
-                              {canCancel && (
+                            {canCancel && order.orderStatus !== 'delivered' && (
                                 <button
                                   onClick={() => handleCancelOrder(order)}
                                   className="mb-2 px-2 py-1 w-64 bg-red-500 text-white font-semibold rounded-md hover:bg-red-700"

@@ -3,12 +3,13 @@ import { Link, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
 import { useAuth } from '../../contexts/AuthContext';
-// import logo from '../../assets/logo.png';
+import logo from '../../assets/logo2.png';
 import help from '../../assets/help.png';
 import cart from '../../assets/cart.png';
 import login from '../../assets/login.png';
 import cartd from '../../assets/cartd.png';
 import order from '../../assets/order.png';
+import auction from '../../assets/auction.png';
 import profile from '../../assets/profile.png';
 import logoutd from '../../assets/logoutd.png';
 import tracking from '../../assets/tracking.png';
@@ -30,11 +31,13 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
 
     const handleLogout = () => {
         logout();
-        navigate('/');
+        navigate('/auth');
     };
 
     const location = useLocation();
-    const isHomePage = location.pathname === '/';
+    const isHomePage = location.pathname === '/bidsb2c';
+
+
 
     return (
         <div>
@@ -42,28 +45,32 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                 <div className="flex flex-col sm:flex-row justify-between items-center flex-wrap">
                     <div className={`flex items-center space-x-6 ml-2 sm:ml-12 ${searchTerm}`}>
                         <div className="text-2xl font-bold underline text-teal-800">
-                            <Link to="/">BIDSB2C</Link>
+                            <Link to="/bidsb2c">
+                                <img src={logo} alt="Logo" className="h-12 " />
+                            </Link>
                         </div>
                         {user && (
                             <>
-
+                                <Link to="/auctions">
+                                    <img src={auction} alt="Auction" className="h-12" />
+                                </Link>
                             </>
                         )}
                     </div>
 
-                    <div className={`h-12 p-2 rounded-lg w-full sm:w-2/5 lg:w-1/3 xl:w-1/4 mt-2 sm:mt-0 ${isHomePage ? '' : 'hidden'}`}>
-                    <div className="relative flex items-center w-full">
-                        <input
-                            type="text"
-                            placeholder="Search products"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            className="p-3 w-full h-8 rounded-md border border-gray-300 focus:border-blue-500 text-gray-700 sm:text-base"
-                        />
+                    <div className={`h-12 p-2 rounded-lg w-full sm:w-2/5 lg:w-1/3 xl:w-1/4 mt-2 sm:mt-0 ${isHomePage ? '' : 'hidden'}`} style={{ width: '700px' }}>
+                        <div className="relative flex items-center w-full">
+                            <input
+                                type="text"
+                                placeholder="Search products"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                className="p-3 w-full h-8 rounded-md border border-gray-300 focus:border-blue-500 text-gray-700 sm:text-base"
+                            />
+                        </div>
                     </div>
-                </div>
-                
+
                     <nav className="flex items-center space-x-6 mt-2 sm:mt-0 sm:mr-10">
                         {user && (
                             <>

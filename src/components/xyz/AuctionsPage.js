@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Filters from './Filters';
+import Filters from '../../pages/components/Filters';
 import { Container, Row, Col, Pagination } from 'react-bootstrap';
 import AuctionComponent from './Auction';
 
