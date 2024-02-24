@@ -25,6 +25,12 @@ const PaymentPage = () => {
       setIsLoading(false);
     }
   };
+  
+  const formatAddress = (address) => {
+    const addressLines = address.split("\\n");
+    return addressLines.join(', ');
+  };
+
 
   return (
     <div className="max-w-2xl mx-auto my-8 p-8 border border-solid border-gray-300 rounded bg-white shadow-md">
@@ -44,8 +50,9 @@ const PaymentPage = () => {
         </div>
         <div className="mb-4">
           <p className="font-semibold">Shipping Address:</p>
-          <p>{orderDetails.shippingAddress}</p>
+          <p>{formatAddress(orderDetails.shippingAddress)}</p>
         </div>
+
         <h2 className="text-xl font-bold mb-4">Order Items:</h2>
         <div>
           {orderDetails.items &&
