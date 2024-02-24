@@ -9,7 +9,7 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
   const [previousAuctionData, setPreviousAuctionData] = useState({ auctions: [], totalItems: 0, totalPages: 0, currentPage: 1 });
   const [filters, setFilters] = useState({});
   const apiBaseURL = process.env.REACT_APP_API_URL;
-  const [limit, setLimit] = useState(9);
+  const [limit, setLimit] = useState(6);
   const [loading, setLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState(null);
   const [isInLiveAuction, setIsInLiveAuction] = useState(false);
@@ -79,8 +79,9 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
         data.map(async (auction) => {
           const bidResponse = await axios.get(`${apiBaseURL}/api/auctions/${auction.auctionId}/bids`);
           const bids = bidResponse.data;
-          const topBid = bids.length > 0 ? bids.reduce((prev, current) => (prev.amount > current.amount ? prev : current)) : null;
-          return { ...auction, topBid };
+          // Extract highest bid amount
+          const highestBidAmount = bids.length > 0 ? Math.max(...bids.map(bid => parseFloat(bid.bidAmount))) : null;
+          return { ...auction, highestBidAmount };
         })
       );
       setPreviousAuctionData({
@@ -151,11 +152,11 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
   return (
     <Container fluid className="p-1">
       <Row className="justify-content-center ml-10 ml-md-2">
-        <Col lg={6} className="border-right border-gray-300">
-          <h2 className="text-3xl font-semibold mb-6 mt-4 text-yellow-700">Ongoing Auctions</h2>
-          <Row className="flex flex-wrap">
+        <Col lg={10} className="border-right border-gray-300">
+          <h2 className="text-2xl font-bold mb-4 mt-2 text-yellow-700 text-center">Ongoing Auctions</h2>
+          <Row className="flex flex-wrap md:mr-0 mr-4">
             {auctionData.auctions.map(auction => (
-              <Col key={auction.auctionId} md={6} lg={4} className="mb-3 flex">
+              <Col key={auction.auctionId} md={6} lg={2} className="mb-3 flex">
                 <Link to={`/auction-products/${auction.Product.productId}/${auction.auctionId}`}>
                   <div
                     className="border p-2 rounded-lg shadow hover:shadow-lg transition duration-300 bg-white product-box flex flex-col"
@@ -169,7 +170,7 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
                         style={{ height: '280px', width: '100%' }}
                       />
                     )}
-                    <h3 className="text-xl font-semibold text-gray-700 overflow-hidden overflow-ellipsis">
+                    <h3 className="text-lg font-semibold text-gray-700 overflow-hidden overflow-ellipsis" style={{ display: "-webkit-box", WebkitBoxOrient: "vertical", overflow: "hidden", WebkitLineClamp: 1 }}>
                       {auction.Product.name}
                     </h3>
                     <p
@@ -179,8 +180,8 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
                       {auction.Product.description}
                     </p>
                     <div className="flex flex-col justify-between text-sm text-gray-600">
-                      <p className="text-green-600 font-semibold mt-0">Start Time: {new Date(auction.startTime).toLocaleString()}</p>
-                      <p className="text-red-500 font-bold mt-0">Bid Ends In : &nbsp;
+                      <p className="text-green-600 font-semibold mt-0">Starts: {new Date(auction.startTime).toLocaleString()}</p>
+                      <p className="text-red-500 font-bold mt-0">Ends In : &nbsp;
                         <Countdown
                           date={new Date(auction.endTime)}
                           renderer={({ days, hours, minutes, seconds, completed }) => {
@@ -210,72 +211,70 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
           {renderPagination()}
         </Col>
 
-        <Col lg={6}>
-          <h2 className="text-3xl font-semibold mb-6 mt-4 text-yellow-700">Previous Auctions</h2>
-          {previousAuctionData.auctions
-            .filter(auction => new Date(auction.endTime) < new Date())
-            .reduce((rows, auction, index) => {
-              if (index % 2 === 0) {
-                rows.push([]);
+        <Container fluid className="p-1">
+          <Row className="justify-content-center ml-md-2">
+            <Col lg={10}>
+              <h2 className="text-2xl font-bold mb-2 text-yellow-700 text-center">Previous Auctions</h2>
+              {previousAuctionData.auctions
+                .filter(auction => new Date(auction.endTime) < new Date() && auction.highestBidAmount) // Filter out auctions with no bids
+                .reduce((rows, auction, index) => {
+                  if (index % 4 === 0) {
+                    rows.push([]);
+                  }
+                  rows[rows.length - 1].push(auction);
+                  return rows;
+                }, [])
+                .map((row, rowIndex) => (
+                  <Row key={rowIndex} className="md:mr-0 mr-12">
+                    {row.map(auction => (
+                      <Col key={auction.auctionId} md={9} lg={3} className="mb-2 flex">
+                        <Link to={`/auction-products/${auction.Product.productId}/${auction.auctionId}`}>
+                          <div
+                            className="border p-2 rounded-lg shadow hover:shadow-lg transition duration-300 bg-white product-box flex flex-col"
+                            style={{ height: '100%', width: '100%' }}
+                          >
+                            <div>
+                              <p className='text-yellow-900 font-bold text-md'>The highest bid amount is: {auction.highestBidAmount.toFixed(2)}</p>
+                            </div>
+                            {auction.Product.ProductImage && auction.Product.ProductImage.length > 0 && (
+                              <img
+                                src={auction.Product.ProductImage[0].imageUrl}
+                                alt={auction.Product.name}
+                                className="w-full h-full object-cover mb-1 rounded-t-lg"
+                                style={{ height: '280px', width: '100%' }}
+                              />
+                            )}
+                            <h3 className="text-lg font-semibold text-gray-700 overflow-hidden overflow-ellipsis">
+                              {auction.Product.name}
+                            </h3>
+                            <p
+                              className="text-gray-600 overflow-hidden overflow-ellipsis"
+                              style={{ display: "-webkit-box", WebkitBoxOrient: "vertical", overflow: "hidden", WebkitLineClamp: 1 }}
+                            >
+                              {auction.Product.description}
+                            </p>
+                            <div className="flex flex-col justify-between text-sm text-gray-600">
+                              <p className="text-green-600 font-semibold mt-0">Start Time: {new Date(auction.startTime).toLocaleString()}</p>
+                              <p className="text-red-500 font-bold mt-0">Bid Ended : &nbsp;
+                                <span className="text-red-500">
+                                  {new Date(auction.endTime).toLocaleString()}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                        </Link>
+                      </Col>
+                    ))}
+                  </Row>
+                ))
               }
-              rows[rows.length - 1].push(auction);
-              return rows;
-            }, [])
-            .map((row, rowIndex) => (
-              <Row key={rowIndex} className="mb-3">
-                {row.map(auction => (
-                  <Col key={auction.auctionId} md={6} lg={5} className="mb-2 flex">
-                    <Link to={`/auction-products/${auction.Product.productId}/${auction.auctionId}`}>
-                      <div
-                        className="border p-2 rounded-lg shadow hover:shadow-lg transition duration-300 bg-white product-box flex flex-col"
-                        style={{ height: '100%', width: '100%' }}
-                      >
-                        <div>
-                          {auction.topBid ? (
-                            <p>The highest bid amount is: {auction.topBid.amount}</p>
-                          ) : (
-                            <p>No bids were placed for this product.</p>
-                          )}
-                        </div>
-                        {auction.Product.ProductImage && auction.Product.ProductImage.length > 0 && (
-                          <img
-                            src={auction.Product.ProductImage[0].imageUrl}
-                            alt={auction.Product.name}
-                            className="w-full h-full object-cover mb-1 rounded-t-lg"
-                            style={{ height: '280px', width: '100%' }}
-                          />
-                        )}
-                        <h3 className="text-xl font-semibold text-gray-700 overflow-hidden overflow-ellipsis">
-                          {auction.Product.name}
-                        </h3>
-                        <p
-                          className="text-gray-600 overflow-hidden overflow-ellipsis"
-                          style={{ display: "-webkit-box", WebkitBoxOrient: "vertical", overflow: "hidden", WebkitLineClamp: 1 }}
-                        >
-                          {auction.Product.description}
-                        </p>
-                        <div className="flex flex-col justify-between text-sm text-gray-600">
-                          <p className="text-green-600 font-semibold mt-0">Start Time: {new Date(auction.startTime).toLocaleString()}</p>
-                          <p className="text-red-500 font-bold mt-0">Bid Ended : &nbsp;
-                            <span className="text-red-500">
-                              {new Date(auction.endTime).toLocaleString()}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  </Col>
-                ))}
-              </Row>
-            ))
-          }
-
-          {renderPagination('previous')}
-        </Col>
-
+            </Col>
+          </Row>
+        </Container>
       </Row>
     </Container>
   );
 };
 
 export default MainAuctionPage;
+

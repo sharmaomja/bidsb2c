@@ -37,16 +37,14 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
     const location = useLocation();
     const isHomePage = location.pathname === '/bidsb2c';
 
-
-
     return (
         <div>
-            <header className="text-white p-2 shadow-md w-full bg-yellow-400">
+            <header className="text-white p-2 shadow-md bg-yellow-400">
                 <div className="flex flex-col sm:flex-row justify-between items-center flex-wrap">
-                    <div className={`flex items-center space-x-6 ml-2 sm:ml-12 ${searchTerm}`}>
+                    <div className="flex items-center space-x-6 ml-2 sm:ml-12">
                         <div className="text-2xl font-bold underline text-teal-800">
                             <Link to="/bidsb2c">
-                                <img src={logo} alt="Logo" className="h-12 " />
+                                <img src={logo} alt="Logo" className="h-12" />
                             </Link>
                         </div>
                         {user && (
@@ -58,7 +56,7 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                         )}
                     </div>
 
-                    <div className={`h-12 p-2 rounded-lg w-full sm:w-2/5 lg:w-1/3 xl:w-1/4 mt-2 sm:mt-0 ${isHomePage ? '' : 'hidden'}`} style={{ width: '700px' }}>
+                    <div className={`md:w-84 h-12 p-2 rounded-lg w-full sm:w-2/5 lg:w-1/3 xl:w-1/4 mt-2 sm:mt-0 ${isHomePage ? '' : 'hidden'}`}>
                         <div className="relative flex items-center w-full">
                             <input
                                 type="text"
@@ -76,7 +74,6 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                             <>
                                 <Link to="/wishlist" className="relative">
                                     <img src={wishlist} alt="Logo" className="h-8 mr-4" />
-
                                 </Link>
 
                                 <Link to="/cart" className="relative">
@@ -93,7 +90,7 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                                 </Link>
                             </>
                         )}
-                        <Dropdown className='grid place-items-center bg-gradient-to-r from-yellow-100 to-yellow-500 p-1 rounded-md'>
+                        <Dropdown className="grid place-items-center bg-gradient-to-r from-yellow-100 to-yellow-500 p-1 rounded-md">
                             <Dropdown.Toggle
                                 variant="transparent"
                                 id="dropdown-basic"
@@ -106,12 +103,9 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                                 {user ? (
                                     <>
                                         <Dropdown.Item as={Link} to="/profile" className="flex items-center px-4 py-2 text-gray-700">
-                                            <div className='flex justify-start'>
-                                                <img src={profile} alt="Profile" className="h-6 mr-2" />
-                                                <span className='flex items-center font-semibold'>Account</span>
-                                            </div>
-                                        </Dropdown.Item>
-                                        <Dropdown.Item as={Link} to="/cart" className="flex items-center px-4 py-2 text-gray-700">
+                                            <img src={profile} alt="Profile" className="h-6 mr-2" />
+                                            <span className="font-semibold">Account</span>
+                                        </Dropdown.Item>                                        <Dropdown.Item as={Link} to="/cart" className="flex items-center px-4 py-2 text-gray-700">
                                             <div className='flex justify-start'>
                                                 <img src={cartd} alt="Cart" className="h-6 mr-2" />
                                                 <span className='flex items-center font-semibold'>Cart</span>
@@ -160,18 +154,6 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                             </Dropdown.Menu>
                         </Dropdown>
                     </nav>
-                </div>
-                <div className="sm:hidden w-full p-2">
-                    <div className="relative flex items-center w-full">
-                        <input
-                            type="text"
-                            placeholder="Search products"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            className="p-3 w-full h-8 rounded-md border border-gray-300 focus:border-blue-500 text-gray-700 sm:text-base"
-                        />
-                    </div>
                 </div>
             </header>
         </div>

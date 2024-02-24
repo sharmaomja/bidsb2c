@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import { useAuth } from '../../hooks/useAuth';
-import {useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Carousel } from 'react-bootstrap';
+import StarRatings from 'react-star-ratings';
 
 const AuctionProductDetails = () => {
-    const { user } = useAuth();
+    const { user } = useAuth() || { user: null };
     const { productId, auctionId } = useParams();
     const [product, setProduct] = useState(null);
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
@@ -17,6 +18,11 @@ const AuctionProductDetails = () => {
     const [bidSuccess, setBidSuccess] = useState(false);
     const [bids, setBids] = useState([]);
     const [userData, setUserData] = useState(null);
+    const [newReview, setNewReview] = useState({ title: '', body: '', rating: 0 });
+    const [rating, setRating] = useState(0);
+    const [reviews, setReviews] = useState([]);
+    const [reviewImages, setReviewImages] = useState(null);
+    const [visibleComments, setVisibleComments] = useState(5);
 
     const apiBaseURL = process.env.REACT_APP_API_URL;
 
@@ -102,13 +108,72 @@ const AuctionProductDetails = () => {
                 setBidSuccess(false);
             }, 3000);
 
-            // Refresh the page after successful bid submission
-            window.location.reload();
+            // window.location.reload();
         } catch (error) {
             console.error('Error submitting bid:', error);
         }
     };
-    
+
+    const submitReview = async () => {
+        if (!user) {
+            alert("Please log in to submit reviews.");
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('productId', productId);
+            formData.append('userId', user.userId);
+            formData.append('title', newReview.title);
+            formData.append('body', newReview.body);
+            formData.append('rating', rating);
+
+            // Append each selected image to the formData
+            if (reviewImages) {
+                reviewImages.forEach((file, index) => {
+                    formData.append('reviewImages', file, `image${index}.png`);
+                });
+            }
+
+            const response = await axios.post(`${apiBaseURL}/api/product-reviews`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            console.log("Review submitted", response.data);
+
+            // Reload the page after submitting the review
+            window.location.reload();
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        }
+
+        setNewReview({ title: '', body: '', rating: 0 });
+        setRating(0);
+        setReviewImages([]); // Clear the selected images after submission
+    };
+
+    const handleImageChange = async (e) => {
+        const selectedFiles = Array.from(e.target.files);
+
+        // Update the state directly with the File objects
+        setReviewImages(selectedFiles);
+    };
+
+    const averageRating = reviews.length > 0
+        ? reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length
+        : 0;
+
+    const handleLoadMore = () => {
+        // Increase the visible comments by a certain amount (e.g., 5 more comments)
+        setVisibleComments((prevVisibleComments) => prevVisibleComments + 5);
+    };
+
+    const handleReviewChange = (e) => {
+        setNewReview({ ...newReview, [e.target.name]: e.target.value });
+    };
+
     const openModal = (index) => {
         setSelectedImageIndex(index);
         setIsModalOpen(true);
@@ -122,6 +187,7 @@ const AuctionProductDetails = () => {
     if (!product) {
         return <div className="loading">Loading...</div>;
     }
+    const isBidActive = true;
 
     return (
         <div className="bg-white flex flex-col min-h-screen">
@@ -262,54 +328,58 @@ const AuctionProductDetails = () => {
 
                         {/* biding */}
                         <div className="max-w-2xl px-1 pb-2 sm:px-6 ">
-                            <form onSubmit={handleBidSubmit} className="mt-6">
-                                <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
-                                    <div className="sm:col-span-2 flex flex-col">
-                                        <label htmlFor="bidAmount" className="text-sm font-medium text-gray-700 mb-1">
-                                            Bid Amount
-                                        </label>
-                                        <div className="flex items-center">
-                                            <div className="relative w-full">
-                                                <input
-                                                    type="number"
-                                                    name="bidAmount"
-                                                    id="bidAmount"
-                                                    value={bidAmount}
-                                                    onChange={(e) => setBidAmount(e.target.value)}
-                                                    required
-                                                    className="shadow-sm bg-gray-100 focus:ring-indigo-500 p-2 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                                />
+                            {isBidActive ? (
+                                <form onSubmit={handleBidSubmit} className="mt-6">
+                                    <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
+                                        <div className="sm:col-span-2 flex flex-col">
+                                            <label htmlFor="bidAmount" className="text-sm font-medium text-gray-700 mb-1">
+                                                Bid Amount
+                                            </label>
+                                            <div className="flex items-center">
+                                                <div className="relative w-full">
+                                                    <input
+                                                        type="number"
+                                                        name="bidAmount"
+                                                        id="bidAmount"
+                                                        value={bidAmount}
+                                                        onChange={(e) => setBidAmount(e.target.value)}
+                                                        required
+                                                        className="shadow-sm bg-gray-100 focus:ring-indigo-500 p-2 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="sm:col-span-2 flex flex-col">
+                                            <label htmlFor="paymentType" className="text-sm font-medium text-gray-700 mb-1">
+                                                Payment Type
+                                            </label>
+                                            <div className="relative">
+                                                <select
+                                                    id="paymentType"
+                                                    name="paymentType"
+                                                    value={paymentType}
+                                                    onChange={(e) => setPaymentType(e.target.value)}
+                                                    className="bg-gray-100 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                                                >
+                                                    <option value="direct">Direct</option>
+                                                    <option value="coins">Coins</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div className="sm:col-span-2 flex flex-col">
-                                        <label htmlFor="paymentType" className="text-sm font-medium text-gray-700 mb-1">
-                                            Payment Type
-                                        </label>
-                                        <div className="relative">
-                                            <select
-                                                id="paymentType"
-                                                name="paymentType"
-                                                value={paymentType}
-                                                onChange={(e) => setPaymentType(e.target.value)}
-                                                className="bg-gray-100 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                                            >
-                                                <option value="direct">Direct</option>
-                                                <option value="coins">Coins</option>
-                                            </select>
-                                        </div>
+                                    <div className="mt-4">
+                                        <button
+                                            type="submit"
+                                            className="w-full bg-red-400 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        >
+                                            Apply for Bid
+                                        </button>
                                     </div>
-                                </div>
-                                <div className="mt-4">
-                                    <button
-                                        type="submit"
-                                        className="w-full bg-red-400 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                    >
-                                        Apply for Bid
-                                    </button>
-                                </div>
-                            </form>
+                                </form>
+                            ) : (
+                                <div className="mt-6 text-red-500">This bid is not active</div>
+                            )}
 
 
                             {bidSuccess && (
@@ -334,13 +404,138 @@ const AuctionProductDetails = () => {
                             <tbody>
                                 {bids.slice(0, 5).map((bid, index) => (
                                     <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
-                                    <td className="px-8 py-3 whitespace-nowrap text-sm font-semibold">{`${user?.firstName} ${user?.lastName}`}</td>
+                                        <td className="px-8 py-3 whitespace-nowrap text-sm font-semibold">{`${user?.firstName} ${user?.lastName}`}</td>
                                         <td className="px-8 py-3 whitespace-nowrap text-sm">{bid.bidAmount}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col mt-24 mb-36 w-full md:ml-16">
+                <div className="lg:flex lg:space-x-2">
+                    {/* Write a Review Section */}
+                    <div className="flex-col w-full lg:w-1/2 md:w-1/3 bg-white">
+                        <h3 className="text-xl font-bold mb-4">Write a Review</h3>
+                        <textarea
+                            name="body"
+                            value={newReview.body}
+                            onChange={handleReviewChange}
+                            placeholder="Your review..."
+                            className="border border-gray-300 p-2 mb-4 w-full h-32 rounded-md"
+                        />
+                        <div className="mb-4">
+                            <label htmlFor="reviewImage" className="text-m font-semibold text-gray-600">
+                                Upload images (optional):
+                            </label>
+                            <input
+                                type="file"
+                                id="reviewImage"
+                                name="reviewImages"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="mt-2"
+                                multiple
+                            />
+                        </div>
+                        <div className="mb-4 flex items-center">
+                            <StarRatings
+                                rating={rating}
+                                starDimension="30px"
+                                starSpacing="5px"
+                                starRatedColor="#FF9900"
+                                changeRating={setRating}
+                                numberOfStars={5}
+                                name="rating"
+                            />
+                        </div>
+                        <button
+                            onClick={submitReview}
+                            className="bg-teal-500 text-white text-lg px-4 py-2 rounded hover:bg-green-400 w-full"
+                        >
+                            Submit Review
+                        </button>
+                    </div>
+
+                    {/* Customer Reviews Section */}
+                    <div className="lg:w-2/3 p-4">
+                        <div className="mb-4">
+                            <div className="flex justify-start items-center">
+                                <h3 className="text-xl font-semibold">Customer Ratings</h3>
+                                {[1, 2, 3, 4, 5].map((starIndex) => (
+                                    <svg
+                                        key={starIndex}
+                                        className={`text-${starIndex <= averageRating ? 'gray-900' : 'gray-200'} h-5 w-5 flex-shrink-0`}
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                    >
+                                        <StarRatings
+                                            rating={starIndex <= averageRating ? 1 : 0}
+                                            starDimension="10px"
+                                            starSpacing="5px"
+                                            starRatedColor="#FF9900"
+                                        />
+                                    </svg>
+                                ))}
+                            </div>
+                        </div>
+
+                        <ul className="space-y-2">
+                            {reviews.slice(0, visibleComments).map((review, index) => (
+                                <li key={index} className="bg-white p-2 rounded-lg shadow-lg" style={{ width: '1050px' }}>
+                                    <div className="flex items-center">
+                                        {[1, 2, 3, 4, 5].map((starIndex) => (
+                                            <svg
+                                                key={starIndex}
+                                                className={`text-${starIndex <= review.rating ? 'gray-900' : 'gray-200'} h-5 w-5 flex-shrink-0`}
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                                aria-hidden="true"
+                                            >
+                                                {/* Your StarRatings component here */}
+                                            </svg>
+                                        ))}
+                                    </div>
+                                    <div className="flex flex-col ml-2 ">
+                                        <div className='flex items-center'>
+                                            <p className="ml-2 text-sm font-medium text-blue-700">
+                                                {review.User.firstName} {review.User.lastName}
+                                            </p>
+                                            <p className="ml-4 text-sm font-medium text-green-500">
+                                                {review.rating} / 5 ⭐
+                                            </p>
+                                        </div>
+                                        <div className="mt-2 ml-2">{review.body}</div>
+                                    </div>
+                                    {review.ReviewImages && review.ReviewImages.length > 0 && (
+                                        <div className="mt-2 ml-4 flex flex-wrap">
+                                            {review.ReviewImages.map((img, imgIndex) => (
+                                                <img
+                                                    key={imgIndex}
+                                                    src={`${apiBaseURL}/${img.imagePath}`}
+                                                    alt={`Review Image ${imgIndex + 1}`}
+                                                    className="object-cover w-32 h-32 mr-2 mb-2"
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+
+                        {reviews.length > visibleComments && (
+                            <button
+                                onClick={handleLoadMore}
+                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                            >
+                                Load More
+                            </button>
+                        )}
+                    </div>
+
                 </div>
             </div>
         </div>
