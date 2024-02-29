@@ -2,36 +2,98 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import { useAuth } from '../../hooks/useAuth';
-import { useParams } from 'react-router-dom';
 import { Carousel } from 'react-bootstrap';
 import StarRatings from 'react-star-ratings';
 import { useCart } from '../../contexts/CartContext';
 import securepay from '../../assets/securepay.png';
 import freedelivery from '../../assets/freedelivery.png';
+import { useParams } from 'react-router-dom';
 
 const ProductDetails = () => {
+    const { user } = useAuth();
+    const { productId } = useParams();
+    const { fetchCartCount } = useCart();
     const [product, setProduct] = useState(null);
-    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(null);
     const [addedToCart, setAddedToCart] = useState(false);
     const [addedToWishlist, setAddedToWishlist] = useState(false);
     const [rating, setRating] = useState(0);
-    const [newReview, setNewReview] = useState({ title: '', body: '', rating: 0 });
     const [reviews, setReviews] = useState([]);
     const [reviewImages, setReviewImages] = useState(null);
     const [visibleComments, setVisibleComments] = useState(5);
+    const [newReview, setNewReview] = useState({ title: '', body: '', rating: 0 });
+    const [showMore, setShowMore] = useState(false);
     const [recommendedProducts, setRecommendedProducts] = useState([]);
     const [suggestedProducts, setSuggestedProducts] = useState([]);
     const [secureTransaction, setSecureTransaction] = useState(false);
     const [freeDelivery, setFreeDelivery] = useState(false);
     const [deliveryTime, setDeliveryTime] = useState('');
-    const [pincode, setPincode] = useState('');
-    const [deliveryDate, setDeliveryDate] = useState('');
-    const [showMore, setShowMore] = useState(false);
-    const { productId } = useParams();
-    const { user } = useAuth();
-    const { fetchCartCount } = useCart();
     const apiBaseURL = process.env.REACT_APP_API_URL;
+
+    const extractImageId = url => {
+        const match = url.match(/\/d\/([^/]+)\//);
+        if (match && match[1]) {
+            return `https://drive.google.com/thumbnail?id=${match[1]}`;
+        } else {
+            console.error('Invalid Google Drive image URL:', url);
+            return url; 
+        }
+    };
+    
+    useEffect(() => {
+        const fetchProductDetails = async () => {
+            try {
+                const response = await axios.get(`${apiBaseURL}/api/products/${productId}`);
+                if (response.data) {
+                    const combinedMedia = [
+                        ...response.data.images.map(image => ({ type: 'image', url: extractImageId(image) })),
+                        ...response.data.videos.map(video => ({ type: 'video', url: video.videoUrl })),
+                    ];
+                    console.log(combinedMedia)
+                    setProduct({ ...response.data, combinedMedia });
+                    setSecureTransaction(response.data.secureTransaction || true);
+                    setFreeDelivery(response.data.freeDelivery || true);
+                    setDeliveryTime(response.data.deliveryTime || '5-6 days');
+                }
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+            }
+        };
+    
+        if (productId) {
+            fetchProductDetails();
+        }
+    }, [productId, apiBaseURL]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const productResponse = await axios.get(`${apiBaseURL}/api/products/${productId}`);
+                console.log("Product Response:", productResponse.data);
+
+                if (productResponse.data) {
+                    const combinedMedia = [
+                        ...productResponse.data.images.map(image => ({ type: 'image', url: extractImageId(image) })),
+                        ...productResponse.data.videos.map(video => ({ type: 'video', url: video.videoUrl })),
+                    ];
+
+                    setProduct({ ...productResponse.data, combinedMedia });
+                    const recommendResponse = await axios.get(`${apiBaseURL}/api//products/${productId}/recommend/category`);
+                    setRecommendedProducts(recommendResponse.data);
+                    // Fetch suggested products
+                    const suggestResponse = await axios.get(`${apiBaseURL}/api//products/${productId}/recommend/seller`);
+                    setSuggestedProducts(suggestResponse.data);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        if (productId) {
+            fetchData();
+        }
+    }, [productId, apiBaseURL]);
     
     const openModal = (index) => {
         setSelectedImageIndex(index);
@@ -42,31 +104,7 @@ const ProductDetails = () => {
         setSelectedImageIndex(null);
         setIsModalOpen(false);
     };
-
-    useEffect(() => {
-        const fetchProductDetails = async () => {
-            try {
-                const response = await axios.get(`${apiBaseURL}/api/products/${productId}`);
-                if (response.data) {
-                    const combinedMedia = [
-                        ...response.data.images.map(image => ({ type: 'image', url: image })),
-                        ...response.data.videos.map(video => ({ type: 'video', url: video.videoUrl })),
-                    ];
-                    setProduct({ ...response.data, combinedMedia });
-                    setSecureTransaction(response.data.secureTransaction || true);
-                    setFreeDelivery(response.data.freeDelivery || true);
-                    setDeliveryTime(response.data.deliveryTime || '5-6 days');
-                }
-            } catch (error) {
-                console.error('Error fetching product details:', error);
-            }
-        };
-
-        if (productId) {
-            fetchProductDetails();
-        }
-    }, [productId, apiBaseURL]);
-
+    
     useEffect(() => {
         const fetchReviews = async () => {
             try {
@@ -83,36 +121,7 @@ const ProductDetails = () => {
         }
     }, [productId, apiBaseURL]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const productResponse = await axios.get(`${apiBaseURL}/api/products/${productId}`);
-                console.log("Product Response:", productResponse.data);
 
-                if (productResponse.data) {
-                    const combinedMedia = [
-                        ...productResponse.data.images.map(image => ({ type: 'image', url: image })),
-                        ...productResponse.data.videos.map(video => ({ type: 'video', url: video.videoUrl })),
-                    ];
-
-                    setProduct({ ...productResponse.data, combinedMedia });
-
-                    // Fetch recommended products
-                    const recommendResponse = await axios.get(`${apiBaseURL}/api//products/${productId}/recommend/category`);
-                    setRecommendedProducts(recommendResponse.data);
-                    // Fetch suggested products
-                    const suggestResponse = await axios.get(`${apiBaseURL}/api//products/${productId}/recommend/seller`);
-                    setSuggestedProducts(suggestResponse.data);
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        if (productId) {
-            fetchData();
-        }
-    }, [productId, apiBaseURL]);
 
     const handleReviewChange = (e) => {
         setNewReview({ ...newReview, [e.target.name]: e.target.value });
@@ -216,8 +225,6 @@ const ProductDetails = () => {
 
     const handleImageChange = async (e) => {
         const selectedFiles = Array.from(e.target.files);
-
-        // Update the state directly with the File objects
         setReviewImages(selectedFiles);
     };
 
@@ -234,43 +241,7 @@ const ProductDetails = () => {
         : 0;
 
     const handleLoadMore = () => {
-        // Increase the visible comments by a certain amount (e.g., 5 more comments)
         setVisibleComments((prevVisibleComments) => prevVisibleComments + 5);
-    };
-
-    const handlePincodeChange = (e) => {
-        setPincode(e.target.value);
-    };
-
-    const fetchEstimatedDeliveryDate = async () => {
-        try {
-            const response = await axios.get(`${apiBaseURL}/api/delivery-date?pincode=${pincode}`);
-            setDeliveryDate(response.data.estimatedDeliveryDate);
-            calculateDeliveryTime(response.data.distance);
-        } catch (error) {
-            console.error('Error fetching estimated delivery date:', error);
-        }
-    };
-
-    const handleCheckDeliveryDate = () => {
-        if (!pincode) {
-            alert('Please enter a valid pincode.');
-            return;
-        }
-        fetchEstimatedDeliveryDate();
-    };
-
-    const calculateDeliveryTime = (distance) => {
-        let newDeliveryTime;
-
-        if (distance < 500) {
-            newDeliveryTime = '4-5 days';
-        } else if (distance < 1000) {
-            newDeliveryTime = '5-6 days';
-        } else {
-            newDeliveryTime = '6-7 days';
-        }
-        setDeliveryTime(newDeliveryTime);
     };
 
     return (

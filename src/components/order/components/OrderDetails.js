@@ -14,7 +14,7 @@ const UserOrders = () => {
   const [returnReason, setReturnReason] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [returnImages, setReturnImages] = useState({});
-  const [ordersPerPage] = useState(5);
+  const [ordersPerPage] = useState(3);
   const apiBaseURL = process.env.REACT_APP_API_URL;
 
   const handleReturnImagesChange = (e, item) => {
@@ -104,16 +104,16 @@ const UserOrders = () => {
 
   const isMobile = useMediaQuery({ query: '(max-width: 767px)' });
 
-  
-const handleCancelOrder = (order) => {
-  // Add your logic to handle canceling the order
-  console.log(`Cancel order with ID: ${order.orderId}`);
-};
 
-const handleTrackOrder = (order) => {
-  // Add your logic to handle tracking the order
-  console.log(`Track order with ID: ${order.orderId}`);
-};
+  const handleCancelOrder = (order) => {
+    // Add your logic to handle canceling the order
+    console.log(`Cancel order with ID: ${order.orderId}`);
+  };
+
+  const handleTrackOrder = (order) => {
+    // Add your logic to handle tracking the order
+    console.log(`Track order with ID: ${order.orderId}`);
+  };
 
   return (
     <div className="">
@@ -138,24 +138,24 @@ const handleTrackOrder = (order) => {
               <div key={order.orderId} className="border rounded-md overflow-hidden mb-8 bg-white shadow-md">
                 {/* Order Header */}
                 <div className="p-1 flex flex-row bg-indigo-100 justify-between items-center">
-                <h1 className="ml-2 text-xl font-bold text-gray-800">Order #: {order.orderId}</h1>
-                <p className="mr-2 text-m font-bold text-gray-600">Order Status: {order.orderStatus}</p>
-              </div>
-              
+                  <h1 className="ml-2 text-xl font-bold text-gray-800">Order #: {order.orderId}</h1>
+                  <p className="mr-2 text-m font-bold text-gray-600">Order Status: {order.orderStatus}</p>
+                </div>
 
-              <div className="p-3">
-              {order.OrderItems && order.OrderItems.length > 0 ? (
-                order.OrderItems.map((item) => {
-                  const returnInfo = item.Returns && item.Returns.length > 0 ? item.Returns[0] : null;
-                  const isReturnRequested = returnInfo && returnInfo.status === 'requested';
 
-                  const canCancel = order.orderStatus !== 'shipped';
-                  const canTrack = order.orderStatus === 'shipped';
-                  const canReturn = order.orderStatus === 'delivered';
+                <div className="p-3">
+                  {order.OrderItems && order.OrderItems.length > 0 ? (
+                    order.OrderItems.map((item) => {
+                      const returnInfo = item.Returns && item.Returns.length > 0 ? item.Returns[0] : null;
+                      const isReturnRequested = returnInfo && returnInfo.status === 'requested';
 
-                  return (
-                    <div key={item.orderItemId} className={`flex mt-2 items-center border-b ${isMobile ? 'flex-col' : ''}`}>
-                     <div className={`flex-shrink-0 ${isMobile ? 'mb-2' : ''}`}>
+                      const canCancel = order.orderStatus !== 'shipped';
+                      const canTrack = order.orderStatus === 'shipped';
+                      const canReturn = order.orderStatus === 'delivered';
+
+                      return (
+                        <div key={item.orderItemId} className={`flex mt-2 items-center border-b ${isMobile ? 'flex-col' : ''}`}>
+                          <div className={`flex-shrink-0 ${isMobile ? 'mb-2' : ''}`}>
                             {item.Product.ProductImage[0] && (
                               <img
                                 src={item.Product.ProductImage[0].imageUrl}
@@ -177,81 +177,87 @@ const handleTrackOrder = (order) => {
                             )}
                           </div>
                           <div className={`mb-4 justify-end flex flex-col ${isMobile ? 'mt-4' : ''}`}>
-                          {isReturnRequested ? (
-                            <div className="text-s font-semibold border mr-12 border-gray-400 bg-gray-100 w-64 shadow-md p-2">
-                              Return/Replacement request already submitted for {item.Product.name}. We'll resolve your issue soon.
-                            </div>
-                          ) : (
-                            <>
-                            {canCancel && order.orderStatus !== 'delivered' && (
-                                <button
-                                  onClick={() => handleCancelOrder(order)}
-                                  className="mb-2 px-2 py-1 w-64 bg-red-500 text-white font-semibold rounded-md hover:bg-red-700"
-                                >
-                                  Cancel Order
-                                </button>
-                              )}
-                              {canTrack && (
-                                <button
-                                  onClick={() => handleTrackOrder(order)}
-                                  className="mb-2 px-2 py-1 w-64 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-700"
-                                >
-                                  Track Order
-                                </button>
-                              )}
-                              {canReturn && (
-                                <div>
-                                  <select
-                                    className="mb-2 block w-64 rounded-md border border-gray-300"
-                                    value={returnAction[item.orderItemId] || ''}
-                                    onChange={(e) => handleReturnReplace(e, item)}
-                                  >
-                                    <option value="" disabled>Select action</option>
-                                    <option value="return">Return</option>
-                                    <option value="replace">Replace</option>
-                                  </select>
-                                  <textarea
-                                    className="mb-2 block w-64 rounded-md border border-gray-300"
-                                    placeholder="Reason"
-                                    value={returnReason[item.orderItemId] || ''}
-                                    onChange={(e) => handleReturnReasonChange(e, item)}
-                                  />
-                                  <input
-                                    type="file"
-                                    onChange={(e) => handleReturnImagesChange(e, item)}
-                                    multiple
-                                    className="mb-2"
-                                  />
+                            {isReturnRequested ? (
+                              <div className="text-s font-semibold border mr-12 border-gray-400 bg-gray-100 w-64 shadow-md p-2">
+                                Return/Replacement request already submitted for {item.Product.name}. We'll resolve your issue soon.
+                              </div>
+                            ) : (
+                              <>
+                                {canCancel && order.orderStatus !== 'delivered' && (
                                   <button
-                                    onClick={() => submitReturnReplaceRequest(item)}
-                                    className="px-2 py-1 w-64 bg-pink-500 text-white font-semibold rounded-md hover:bg-green-700"
+                                    onClick={() => handleCancelOrder(order)}
+                                    className="mb-2 px-2 py-1 w-64 bg-red-500 text-white font-semibold rounded-md hover:bg-red-700"
                                   >
-                                    Submit
+                                    Cancel Order
                                   </button>
-                                </div>
-                              )}
-                            </>
-                          )}
+                                )}
+                                {canTrack && (
+                                  <button
+                                    onClick={() => handleTrackOrder(order)}
+                                    className="mb-2 px-2 py-1 w-64 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-700"
+                                  >
+                                    Track Order
+                                  </button>
+                                )}
+                                {canReturn && (
+                                  <div>
+                                    <select
+                                      className="mb-2 block w-64 rounded-md border border-gray-300"
+                                      value={returnAction[item.orderItemId] || ''}
+                                      onChange={(e) => handleReturnReplace(e, item)}
+                                    >
+                                      <option value="" disabled>Select action</option>
+                                      <option value="return">Return</option>
+                                      <option value="replace">Replace</option>
+                                    </select>
+                                    <textarea
+                                      className="mb-2 block w-64 rounded-md border border-gray-300"
+                                      placeholder="Reason"
+                                      value={returnReason[item.orderItemId] || ''}
+                                      onChange={(e) => handleReturnReasonChange(e, item)}
+                                    />
+                                    <input
+                                      type="file"
+                                      onChange={(e) => handleReturnImagesChange(e, item)}
+                                      multiple
+                                      className="mb-2"
+                                    />
+                                    <button
+                                      onClick={() => submitReturnReplaceRequest(item)}
+                                      className="px-2 py-1 w-64 bg-pink-500 text-white font-semibold rounded-md hover:bg-green-700"
+                                    >
+                                      Submit
+                                    </button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="text-gray-600">No items in this order</div>
-                )}
+                      );
+                    })
+                  ) : (
+                    <div className="text-gray-600">No items in this order</div>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })
-      ) : (
-        <div className="text-gray-600">No orders found or still loading...</div>
-      )}
+            );
+          })
+        ) : (
+          <div class="flex justify-center items-center h-screen">
+          <div class="text-center">
+            <p class="text-gray-600 font-bold mb-4">Loading Orders...</p>
+            <p class="text-gray-600">Please wait while we retrieve your orders. This may take a moment. If you have placed orders previously, they will appear here once loaded. Thank you for your patience.</p>
+          </div>
+        </div>
+        
+        )}
         {/* Pagination */}
-        <nav className="mt-4">
+        <nav className="mt-4 mb-10 p-10">
           <ul className="flex justify-center space-x-2">
             {pageNumbers.map(number => (
               <li key={number} className="pagination-item">
-                <a onClick={(e) => paginate(number, e)} href="#" className="text-blue-500 hover:underline">
+                <a onClick={(e) => paginate(number, e)} href="#" className="p-2 rounded-full bg-yellow-400 text-lg text-gray-600 font-bold hover:underline">
                   {number}
                 </a>
               </li>
