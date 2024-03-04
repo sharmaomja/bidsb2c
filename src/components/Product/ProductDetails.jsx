@@ -37,10 +37,10 @@ const ProductDetails = () => {
             return `https://drive.google.com/thumbnail?id=${match[1]}`;
         } else {
             console.error('Invalid Google Drive image URL:', url);
-            return url; 
+            return url;
         }
     };
-    
+
     useEffect(() => {
         const fetchProductDetails = async () => {
             try {
@@ -60,7 +60,7 @@ const ProductDetails = () => {
                 console.error('Error fetching product details:', error);
             }
         };
-    
+
         if (productId) {
             fetchProductDetails();
         }
@@ -94,7 +94,7 @@ const ProductDetails = () => {
             fetchData();
         }
     }, [productId, apiBaseURL]);
-    
+
     const openModal = (index) => {
         setSelectedImageIndex(index);
         setIsModalOpen(true);
@@ -104,7 +104,7 @@ const ProductDetails = () => {
         setSelectedImageIndex(null);
         setIsModalOpen(false);
     };
-    
+
     useEffect(() => {
         const fetchReviews = async () => {
             try {
@@ -252,13 +252,13 @@ const ProductDetails = () => {
                 contentLabel="Product Image Modal"
                 style={{
                     content: {
-                        width: '35%',
-                        height: '70%',
-                        margin: '0 auto',
+                        width: '40%',
+                        height: '80%',
+                        margin: 'auto',
                         overflow: 'hidden',
                     },
                     overlay: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.60)',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -269,11 +269,19 @@ const ProductDetails = () => {
                     <img
                         src={product.combinedMedia[selectedImageIndex].url}
                         alt={`Product media ${selectedImageIndex + 1}`}
-                        className=" w-full h-full"
+                        className="object-contain bg-transparent"
+                        style={{
+                            width: '100%',
+                            height: '90%'
+                        }}
                     />
                 )}
-                <button className='bg-red-500 w-20 text-white font-bold' onClick={closeModal}>Close</button>
+                <div className="flex justify-center">
+                    <button className="bg-red-500 text-white font-bold w-96 h-8 mt-4 rounded-full" onClick={closeModal}>Close</button>
+                </div>
+
             </Modal>
+
 
             <div className='flex flex-col md:flex-row md:justify-center mt-3 md:mt-0 md:ml-12 md:mr-12'>
                 <div className='flex flex-col md:flex-row md:justify-center mt-4 md:mt-0 md:ml-12 md:mr-12'>
@@ -291,7 +299,7 @@ const ProductDetails = () => {
                                     }, []).map((mediaGroup, groupIndex) => (
                                         <Carousel.Item key={groupIndex}>
                                             {/* Use a grid for desktop view */}
-                                            <div className="hidden md:grid grid-cols-4 lg:grid-cols-3 gap-2">
+                                            <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-2">
                                                 {mediaGroup.map((media, index) => {
                                                     if (media.type === 'image') {
                                                         return (
@@ -299,8 +307,8 @@ const ProductDetails = () => {
                                                                 key={index}
                                                                 src={media.url}
                                                                 alt={`Product media ${groupIndex * 3 + index + 1}`}
-                                                                className="object-cover cursor-pointer"
-                                                                style={{ width: "350px", height: "350px" }}
+                                                                className="object-cover cursor-pointer w-full h-full"
+                                                                // style={{ width: "100%", height: "100%" }}
                                                                 onClick={() => openModal(groupIndex * 3 + index)}
                                                             />
                                                         );
