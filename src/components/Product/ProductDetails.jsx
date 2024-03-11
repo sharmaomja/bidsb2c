@@ -285,7 +285,7 @@ const ProductDetails = () => {
 
             <div className='flex flex-col md:flex-row md:justify-center mt-3 md:mt-0 md:ml-12 md:mr-12'>
                 <div className='flex flex-col md:flex-row md:justify-center mt-4 md:mt-0 md:ml-12 md:mr-12'>
-                    <div className="flex-1 md:min-w-screen md:flex-col" style={{ width: "900px", height: "740px" }}>
+                    <div className="flex-1 md:min-w-screen md:flex-col" style={{ width: "900px", height: "800px" }}>
                         <div className='flex-1 md:h-72'>
                             <Carousel>
                                 {product &&

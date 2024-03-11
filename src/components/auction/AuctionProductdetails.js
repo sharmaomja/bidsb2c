@@ -7,7 +7,8 @@ import { Carousel } from 'react-bootstrap';
 import StarRatings from 'react-star-ratings';
 
 const AuctionProductDetails = () => {
-    const { user } = useAuth() || { user: null };
+    const { user, sessionId } = useAuth();
+    const [profileData, setProfileData] = useState({});
     const { productId, auctionId } = useParams();
     const [product, setProduct] = useState(null);
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
@@ -23,7 +24,7 @@ const AuctionProductDetails = () => {
     const [reviews, setReviews] = useState([]);
     const [reviewImages, setReviewImages] = useState(null);
     const [visibleComments, setVisibleComments] = useState(5);
-
+    const [auctionData, setAuctionData] = useState(null);
     const apiBaseURL = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
@@ -51,22 +52,21 @@ const AuctionProductDetails = () => {
         setShowMore(!showMore);
     };
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await axios.get(`${apiBaseURL}/users/${user.userId}`);
-                if (response.data) {
-                    setUserData(response.data);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        if (user.userId) {
-            fetchUserData();
+    const fetchUserData = async (userId) => {
+        try {
+            const config = {
+                headers: {
+                    'Session-Id': sessionId,
+                },
+            };
+            const response = await axios.get(`${apiBaseURL}/users/${userId}`, config);
+            const userData = response.data;
+            setProfileData(userData);
+            console.log('Received User Data:', userData);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
         }
-    }, [user.userId, apiBaseURL]);
+    };
 
     useEffect(() => {
         const fetchBids = async () => {
@@ -86,13 +86,34 @@ const AuctionProductDetails = () => {
         }
     }, [auctionId, apiBaseURL]);
 
+    useEffect(() => {
+        const fetchAuctionData = async () => {
+            try {
+                const response = await axios.get(`${apiBaseURL}/api/auctions/view/${auctionId}`);
+                if (response.data) {
+                    console.log('Auction Data:', response.data)
+                    setAuctionData(response.data); // Set auction data
+                }
+            } catch (error) {
+                console.error('Error fetching auction data:', error);
+            }
+        };
+
+        if (auctionId) {
+            fetchAuctionData();
+        }
+    }, [auctionId, apiBaseURL]);
 
     const handleBidSubmit = async (e) => {
         e.preventDefault();
         try {
+            if (!user) {
+                console.error('User not authenticated');
+                return;
+            }
             const requestData = {
                 auctionId: auctionId,
-                userId: user.userId,
+                userId: user.userId, // Add null check here
                 bidAmount: parseFloat(bidAmount),
                 coinsUsed: paymentType === 'coins' ? 10 : 0,
                 payment_type: paymentType
@@ -101,14 +122,13 @@ const AuctionProductDetails = () => {
             // Reset form fields
             setBidAmount('');
             setPaymentType('direct');
-            setBidSuccess(true); // Set bid success state variable
-
+            setBidSuccess(true);
             // Hide bid success message after 3 seconds
             setTimeout(() => {
                 setBidSuccess(false);
-            }, 3000);
+            }, 10000);
 
-            // window.location.reload();
+            window.location.reload();
         } catch (error) {
             console.error('Error submitting bid:', error);
         }
@@ -195,7 +215,7 @@ const AuctionProductDetails = () => {
                 <div className="overflow-x-auto h-8 bg-yellow-100 text-md font-semibold">
                     <marquee className="whitespace-nowrap" direction="right" scrollamount="20">
                         {bids.map((bid, index) => (
-                            <span key={index} className="text-gray-800 mr-4">{`${userData.firstName} ${userData.lastName} - ₹ ${bid.bidAmount}`}</span>
+                            <span key={index} className="text-gray-800 mr-4">{`${user?.firstName} ${user?.lastName} - ₹ ${bid.bidAmount}`}</span>
                         ))}
                     </marquee>
                 </div>
@@ -328,7 +348,7 @@ const AuctionProductDetails = () => {
 
                         {/* biding */}
                         <div className="max-w-2xl px-1 pb-2 sm:px-6 ">
-                            {isBidActive ? (
+                            {auctionData && auctionData.status !== 'completed' ? (
                                 <form onSubmit={handleBidSubmit} className="mt-6">
                                     <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
                                         <div className="sm:col-span-2 flex flex-col">
@@ -344,8 +364,10 @@ const AuctionProductDetails = () => {
                                                         value={bidAmount}
                                                         onChange={(e) => setBidAmount(e.target.value)}
                                                         required
+                                                        min={auctionData.startingBid}
                                                         className="shadow-sm bg-gray-100 focus:ring-indigo-500 p-2 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                                                     />
+                                                    <span className="text-sm font-semibold text-gray-800">Bid amount cannot be less than ₹{auctionData.startingBid}</span> {/* Display text indicating minimum bid amount */}
                                                 </div>
                                             </div>
                                         </div>
@@ -371,16 +393,16 @@ const AuctionProductDetails = () => {
                                     <div className="mt-4">
                                         <button
                                             type="submit"
-                                            className="w-full bg-red-400 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                            className="w-full bg-red-400 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                         >
                                             Apply for Bid
                                         </button>
                                     </div>
-                                </form>
-                            ) : (
-                                <div className="mt-6 text-red-500">This bid is not active</div>
+                                </form>) : auctionData && auctionData.status === 'completed' ? (
+                                    <div className="mt-6 text-red-500 font-bold underline text-xl">This bid is not active</div>
+                                ) : (
+                                <div className="mt-6 text-red-500 font-semibold text-lg">This bid is not active</div>
                             )}
-
 
                             {bidSuccess && (
                                 <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded">
@@ -502,7 +524,7 @@ const AuctionProductDetails = () => {
                                     <div className="flex flex-col ml-2 ">
                                         <div className='flex items-center'>
                                             <p className="ml-2 text-sm font-medium text-blue-700">
-                                                {review.User.firstName} {review.User.lastName}
+                                                {review.User && `${review.User.firstName} ${review.User.lastName}`}
                                             </p>
                                             <p className="ml-4 text-sm font-medium text-green-500">
                                                 {review.rating} / 5 ⭐
@@ -524,6 +546,7 @@ const AuctionProductDetails = () => {
                                     )}
                                 </li>
                             ))}
+
                         </ul>
 
                         {reviews.length > visibleComments && (

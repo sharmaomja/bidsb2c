@@ -36,14 +36,9 @@ const Profile = () => {
 
       // Set the received user data in the state
       setProfileData(userData);
-      // Log the received user data for debugging
       console.log('Received User Data:', userData);
       console.log('Setting uploaded profile picture:', userData?.UserProfilePicture?.imagePath);
-      // Assuming the user data includes imagePath for the profile picture
       setUploadedProfilePicture(userData?.UserProfilePicture?.imagePath || profile);
-      // Other user data handling (if needed)
-
-      // Fetch addresses if needed
       fetchAddresses(userId);
     } catch (error) {
       console.error('Error fetching user data:', error);
