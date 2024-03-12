@@ -55,14 +55,8 @@ const AuctionProductDetails = () => {
 
     const fetchBidderData = async (userId) => {
         try {
-            const config = {
-                headers: {
-                    'Session-Id': sessionId,
-                },
-            };
-            const response = await axios.get(`${apiBaseURL}/users/${userId}`, config);
+            const response = await axios.get(`${apiBaseURL}/users/${userId}`);
             const userData = response.data;
-            // Store user data in the state
             setBidderData((prevData) => ({
                 ...prevData,
                 [userId]: userData,
@@ -223,9 +217,12 @@ const AuctionProductDetails = () => {
             <div className="flex flex-col mt-3">
                 <div className="overflow-x-auto h-8 bg-yellow-100 text-md font-semibold">
                     <marquee className="whitespace-nowrap" direction="right" scrollamount="20">
-                        {bids.map((bid, index) => (
-                            <span key={index} className="text-gray-800 mr-4">{`${user?.firstName} ${user?.lastName} - ₹ ${bid.bidAmount}`}</span>
-                        ))}
+                    {bids.map((bid, index) => (
+                        <span key={index} className="text-gray-800 mr-4">
+                            {bidderData[bid.userId] ? `${bidderData[bid.userId].firstName} ${bidderData[bid.userId].lastName}` : 'Unknown Bidder'} - ₹ {bid.bidAmount}
+                        </span>
+                    ))}
+                    
                     </marquee>
                 </div>
             </div>
