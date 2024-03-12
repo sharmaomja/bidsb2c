@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/bidsb2c/static/css/main.d8440091.css",
-    "main.js": "/bidsb2c/static/js/main.ca2a2106.js",
+    "main.js": "/bidsb2c/static/js/main.b17a95f5.js",
     "static/media/logo2.png": "/bidsb2c/static/media/logo2.a9c6fb85a9efffcc6de6.png",
     "static/media/confirm.gif": "/bidsb2c/static/media/confirm.c00cce5c81bab7f1b880.gif",
     "static/media/profile.gif": "/bidsb2c/static/media/profile.c305557b49fc925171e5.gif",
     "index.html": "/bidsb2c/index.html",
     "main.d8440091.css.map": "/bidsb2c/static/css/main.d8440091.css.map",
-    "main.ca2a2106.js.map": "/bidsb2c/static/js/main.ca2a2106.js.map"
+    "main.b17a95f5.js.map": "/bidsb2c/static/js/main.b17a95f5.js.map"
   },
   "entrypoints": [
     "static/css/main.d8440091.css",
-    "static/js/main.ca2a2106.js"
+    "static/js/main.b17a95f5.js"
   ]
 }
