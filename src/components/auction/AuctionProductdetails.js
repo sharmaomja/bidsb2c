@@ -25,6 +25,7 @@ const AuctionProductDetails = () => {
     const [reviewImages, setReviewImages] = useState(null);
     const [visibleComments, setVisibleComments] = useState(5);
     const [auctionData, setAuctionData] = useState(null);
+    const [bidderData, setBidderData] = useState({});
     const apiBaseURL = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
@@ -52,7 +53,7 @@ const AuctionProductDetails = () => {
         setShowMore(!showMore);
     };
 
-    const fetchUserData = async (userId) => {
+    const fetchBidderData = async (userId) => {
         try {
             const config = {
                 headers: {
@@ -61,31 +62,40 @@ const AuctionProductDetails = () => {
             };
             const response = await axios.get(`${apiBaseURL}/users/${userId}`, config);
             const userData = response.data;
-            setProfileData(userData);
-            console.log('Received User Data:', userData);
+            // Store user data in the state
+            setBidderData((prevData) => ({
+                ...prevData,
+                [userId]: userData,
+            }));
+            console.log('Received Bidder Data:', userData);
         } catch (error) {
-            console.error('Error fetching user data:', error);
+            console.error('Error fetching bidder data:', error);
         }
     };
-
+    
+    // Inside useEffect for fetching bids
     useEffect(() => {
         const fetchBids = async () => {
-            try {
+            try { 
                 const response = await axios.get(`${apiBaseURL}/api/auctions/${auctionId}/bids`);
                 if (response.data) {
                     console.log('Fetched bids:', response.data);
+                    // Fetch bidder data for each bid
+                    for (const bid of response.data) {
+                        await fetchBidderData(bid.userId);
+                    }
                     setBids(response.data);
                 }
             } catch (error) {
                 console.error('Error fetching bids:', error);
             }
         };
-
+    
         if (auctionId) {
             fetchBids();
         }
     }, [auctionId, apiBaseURL]);
-
+    
     useEffect(() => {
         const fetchAuctionData = async () => {
             try {
@@ -207,7 +217,6 @@ const AuctionProductDetails = () => {
     if (!product) {
         return <div className="loading">Loading...</div>;
     }
-    const isBidActive = true;
 
     return (
         <div className="bg-white flex flex-col min-h-screen">
@@ -424,12 +433,15 @@ const AuctionProductDetails = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {bids.slice(0, 5).map((bid, index) => (
-                                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
-                                        <td className="px-8 py-3 whitespace-nowrap text-sm font-semibold">{`${user?.firstName} ${user?.lastName}`}</td>
-                                        <td className="px-8 py-3 whitespace-nowrap text-sm">{bid.bidAmount}</td>
-                                    </tr>
-                                ))}
+                            {bids.slice(0, 5).map((bid, index) => (
+                                <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
+                                    <td className="px-8 py-3 whitespace-nowrap text-sm font-semibold">
+                                        {/* Display bidder's name */}
+                                        {bidderData[bid.userId]?.firstName} {bidderData[bid.userId]?.lastName}
+                                    </td>
+                                    <td className="px-8 py-3 whitespace-nowrap text-sm">{bid.bidAmount}</td>
+                                </tr>
+                            ))}
                             </tbody>
                         </table>
                     </div>
