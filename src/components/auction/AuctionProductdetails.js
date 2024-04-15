@@ -26,9 +26,8 @@ const AuctionProductDetails = () => {
     const [visibleComments, setVisibleComments] = useState(5);
     const [auctionData, setAuctionData] = useState(null);
     const [bidderData, setBidderData] = useState({});
-    const [timeRemaining, setTimeRemaining] = useState(null);
-    
     const apiBaseURL = process.env.REACT_APP_API_URL;
+    const [timeRemaining, setTimeRemaining] = useState(null);
 
     useEffect(() => {
         if (auctionData) {
