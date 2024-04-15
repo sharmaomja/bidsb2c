@@ -31,7 +31,7 @@ const WishList = () => {
     if (!user) {
       return;
     }
-  
+
     try {
       let cartId;
       const cartResponse = await axios.get(`${apiBaseURL}/api/shopping-cart/${user.userId}`);
@@ -41,7 +41,7 @@ const WishList = () => {
         const newCartResponse = await axios.post(`${apiBaseURL}/api/shopping-cart`, { userId: user.userId });
         cartId = newCartResponse.data.cartId;
       }
-  
+
       await axios.post(`${apiBaseURL}/api/cart-items`, {
         cartId,
         productId,
@@ -73,50 +73,50 @@ const WishList = () => {
 
   return (
     <div className="mx-auto bg-white max-w-8xl px-4 sm:px-6 lg:px-8">
-    <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-      <h1 className="text-3xl my-3 font-bold tracking-tight text-gray-900">Wishlist</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      {items.length > 0 ? (
-        items.map((item) => (
-            <div key={item.wishListItemId} className="bg-white rounded-md overflow-hidden shadow-md">
-              <Link to={`/products/${item.productId}`}>
-                <img
-                  src={item.productImage || defaultImage}
-                  alt={item.productName || 'Product image'}
-                  className="h-48 w-full object-cover object-center"
-                />
-              </Link>
-              <div className="p-4">
-                <Link to={`/products/${item.productId}`} className="text-base font-medium text-gray-900 hover:underline">
-                  {item.productName}
+      <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+        <h1 className="text-3xl my-3 font-bold tracking-tight text-gray-900">Wishlist</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {items.length > 0 ? (
+            items.map((item) => (
+              <div key={item.wishListItemId} className="bg-white rounded-md overflow-hidden shadow-md">
+                <Link to={`/products/${item.productId}`}>
+                  <img
+                    src={item.productImage || defaultImage}
+                    alt={item.productName || 'Product image'}
+                    className="h-48 w-full object-cover object-center"
+                  />
                 </Link>
-                <p className="mt-1 text-sm text-gray-500">{item.brand || 'Brand not available'}</p>
-                <div className="mt-2 flex justify-between">
-                  <p className="text-base font-semibold text-gray-900">₹{item.price || 'Price not available'}</p>
-                  <div className="space-x-2">
-                    <div><button
-                      onClick={() => handleAddToCart(item.productId, item.wishListItemId)}
-                      className="text-white bg-green-600 px-3 py-1 rounded-md hover:bg-green-700"
-                    >
+                <div className="p-4">
+                  <Link to={`/products/${item.productId}`} className="text-base font-medium text-gray-900 hover:underline">
+                    {item.productName}
+                  </Link>
+                  <p className="mt-1 text-sm text-gray-500">{item.brand || 'Brand not available'}</p>
+                  <div className="mt-2 flex justify-between">
+                    <p className="text-base font-semibold text-gray-900">₹{item.discounted_price}</p>
+                    <div className="space-x-2">
+                      <div><button
+                        onClick={() => handleAddToCart(item.productId, item.wishListItemId)}
+                        className="text-white bg-green-600 px-3 py-1 rounded-md hover:bg-green-700"
+                      >
                         Cart
-                    </button>
-                    <button
-                      onClick={() => handleRemove(item.wishListItemId)}
-                      className="text-white mt-2 bg-red-600 ml-2 px-3 py-1 rounded-md hover:bg-red-700"
-                    >
-                      Remove
-                    </button></div>
+                      </button>
+                        <button
+                          onClick={() => handleRemove(item.wishListItemId)}
+                          className="text-white mt-2 bg-red-600 ml-2 px-3 py-1 rounded-md hover:bg-red-700"
+                        >
+                          Remove
+                        </button></div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <div></div>
-        )}
+            ))
+          ) : (
+            <div></div>
+          )}
+        </div>
       </div>
     </div>
-  </div>
   );
 };
 

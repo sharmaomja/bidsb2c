@@ -1,5 +1,4 @@
 {
-  "homepage": "https://sharmaomja.github.io/bidsb2c",
   "name": "ecommerce-app",
   "version": "0.1.0",
   "private": true,
@@ -38,11 +37,10 @@
     "tailwindcss": "^3.3.5",
     "web-vitals": "^2.1.4"
   },
+  "proxy": "http://13.201.252.136:8000",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

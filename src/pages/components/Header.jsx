@@ -144,12 +144,12 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                                         </Dropdown.Item>
                                     </>
                                 ) : (
-                                    <Dropdown.Item as={Link} to="/auth" className="block px-4 py-2 text-gray-700">
-                                        <div className='flex justify-start'>
-                                            <img src={login} alt="Logout" className="h-6 mr-2" />
-                                            <span className='flex items-center font-semibold'>Login/Register</span>
-                                        </div>
-                                    </Dropdown.Item>
+                                    <Dropdown.Item as={Link} to="/auth" className="block px-2 py-1 text-gray-700">
+                                    <div className='flex justify-start'>
+                                        <img src={login} alt="Logout" className="h-6 w-24 mr-1" />
+                                        <span className='flex items-center font-semibold'>Login/Register</span>
+                                    </div>
+                                </Dropdown.Item>
                                 )}
                             </Dropdown.Menu>
                         </Dropdown>

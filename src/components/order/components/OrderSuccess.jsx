@@ -54,7 +54,6 @@ const OrderSuccess = () => {
           <p className="text-gray-600 p-1">
             Payment Method: <span className="font-semibold">{order?.paymentMethod}</span>
           </p>
-          {/* Add any other details you wish to display */}
         </div>
         <div className="flex justify-center mt-8">
           <Link

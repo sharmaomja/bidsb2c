@@ -235,7 +235,6 @@ const Checkout = () => {
                 </div>
               )}
             </div>
-
             <div className="mt-8">
               <label className="block text-sm font-medium text-gray-700">Payment Method:</label>
               <select
@@ -293,9 +292,6 @@ const Checkout = () => {
 
                     <div className="ml-4 flex-1">
                       <h3 className="text-base font-medium text-gray-900">{item.productName}</h3>
-                      <p className="text-sm text-gray-500" title={item.productDescriptiom}>
-                        {item.productDescriptiom.split('\n')[0]}...
-                      </p>
                       <div className='flex space-x-10'>
                         <div className='text-sm font-semibold'>Price: ₹{Math.ceil(item.productPrice)  }</div>
                         <div className='text-sm font-semibold'>Total: ₹{Math.ceil((item.productPrice * item.quantity).toFixed(2))}</div>

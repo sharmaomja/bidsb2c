@@ -138,7 +138,7 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
     return <p>Loading auctions...</p>;
   }
 
-  if (!Array.isArray(auctionData.auctions) || auctionData.auctions.length === 0) {
+  if (!Array.isArray(auctionData.auctions) || auctionData.auctions.length === 0 || !Array.isArray(previousAuctionData.auctions) || previousAuctionData.auctions.length === 0) {
     return (
       <div className='flex flex-col items-center mt-36'>
         <p className='font-semibold mb-4 underline'>No ongoing auctions at the moment.</p>

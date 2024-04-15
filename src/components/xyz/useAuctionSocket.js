@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:8000'); // Adjust the URL to your server
+const socket = io('http://13.201.252.136:8000'); // Adjust the URL to your server
 
 const useAuctionSocket = (auctionId, onNewBid) => {
   useEffect(() => {
