@@ -13,17 +13,6 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   const [limit, setLimit] = useState(9);
   const [showFilters, setShowFilters] = useState(false);
 
-
-  const extractImageId = url => {
-    const match = url.match(/\/d\/([^/]+)\//);
-    if (match && match[1]) {
-      return `https://drive.google.com/thumbnail?id=${match[1]}`;
-    } else {
-      console.error('Invalid Google Drive image URL:', url);
-      return url;
-    }
-  };
-
   const fetchProducts = async () => {
     try {
       const queryParams = new URLSearchParams();
@@ -39,18 +28,17 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
       };
 
       const response = await fetch(`${apiBaseURL}/api/products-all?${queryParams.toString()}`);
-      console.log(`${apiBaseURL}/api/products-all?${queryParams.toString()}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-
+      console.log('Data',  data)
       // Extract image URLs using extractImageId function
       const productsWithImages = data.data.map(product => ({
         ...product,
-        image: extractImageId(product.image)
+        image: product.image
       }));
-
+      console.log("Product response", productsWithImages)
       setProducts(productsWithImages);
       setTotalPages(data.totalPages);
     } catch (error) {

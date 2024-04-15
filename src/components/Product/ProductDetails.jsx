@@ -31,23 +31,13 @@ const ProductDetails = () => {
     const [deliveryTime, setDeliveryTime] = useState('');
     const apiBaseURL = process.env.REACT_APP_API_URL;
 
-    const extractImageId = url => {
-        const match = url.match(/\/d\/([^/]+)\//);
-        if (match && match[1]) {
-            return `https://drive.google.com/thumbnail?id=${match[1]}`;
-        } else {
-            console.error('Invalid Google Drive image URL:', url);
-            return url;
-        }
-    };
-
     useEffect(() => {
         const fetchProductDetails = async () => {
             try {
                 const response = await axios.get(`${apiBaseURL}/api/products/${productId}`);
                 if (response.data) {
                     const combinedMedia = [
-                        ...response.data.images.map(image => ({ type: 'image', url: extractImageId(image) })),
+                        ...response.data.images.map(image => ({ type: 'image', url: image.imageUrl })),
                         ...response.data.videos.map(video => ({ type: 'video', url: video.videoUrl })),
                     ];
                     console.log(combinedMedia)
@@ -74,7 +64,7 @@ const ProductDetails = () => {
 
                 if (productResponse.data) {
                     const combinedMedia = [
-                        ...productResponse.data.images.map(image => ({ type: 'image', url: extractImageId(image) })),
+                        ...productResponse.data.images.map(image => ({ type: 'image', url: image.imageUrl })),
                         ...productResponse.data.videos.map(video => ({ type: 'video', url: video.videoUrl })),
                     ];
 
@@ -288,54 +278,52 @@ const ProductDetails = () => {
                     <div className="flex-1 md:min-w-screen md:flex-col" style={{ width: "900px", height: "800px" }}>
                         <div className='flex-1 md:h-72'>
                             <Carousel>
-                                {product &&
-                                    product.combinedMedia &&
-                                    product.combinedMedia.reduce((acc, media, index) => {
-                                        if (index % 6 === 0) {
-                                            acc.push([]);
-                                        }
-                                        acc[acc.length - 1].push(media);
-                                        return acc;
-                                    }, []).map((mediaGroup, groupIndex) => (
-                                        <Carousel.Item key={groupIndex}>
-                                            {/* Use a grid for desktop view */}
-                                            <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-2">
-                                                {mediaGroup.map((media, index) => {
-                                                    if (media.type === 'image') {
-                                                        return (
-                                                            <img
-                                                                key={index}
-                                                                src={media.url}
-                                                                alt={`Product media ${groupIndex * 3 + index + 1}`}
-                                                                className="object-cover cursor-pointer w-full h-full"
-                                                                // style={{ width: "100%", height: "100%" }}
-                                                                onClick={() => openModal(groupIndex * 3 + index)}
-                                                            />
-                                                        );
-                                                    }
-                                                    return null;
-                                                })}
-                                            </div>
-                                            {/* Use a 2x2 grid for mobile view */}
-                                            <div className="md:hidden grid grid-cols-1 sm:grid-cols-1 gap-2">
-                                                {mediaGroup.map((media, index) => {
-                                                    if (media.type === 'image' && index < 1) {
-                                                        return (
-                                                            <img
-                                                                key={index}
-                                                                src={media.url}
-                                                                alt={`Product media ${groupIndex * 2 + index + 1}`}
-                                                                className="ml-4 w-full h-full sm:h-64 object-cover cursor-pointer"
-                                                                style={{ width: "460px" }}
-                                                                onClick={() => openModal(groupIndex * 2 + index)}
-                                                            />
-                                                        );
-                                                    }
-                                                    return null;
-                                                })}
-                                            </div>
-                                        </Carousel.Item>
-                                    ))}
+                            {product &&
+                                product.combinedMedia &&
+                                product.combinedMedia.reduce((acc, media, index) => {
+                                    if (index % 6 === 0) {
+                                        acc.push([]);
+                                    }
+                                    acc[acc.length - 1].push(media);
+                                    return acc;
+                                }, []).map((mediaGroup, groupIndex) => (
+                                    <Carousel.Item key={groupIndex}>
+                                        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-2">
+                                            {mediaGroup.map((media, index) => {
+                                                if (media.type === 'image') {
+                                                    return (
+                                                        <img
+                                                            key={index}
+                                                            src={media.url} // Use the image URL from the backend
+                                                            alt={`Product media ${groupIndex * 3 + index + 1}`}
+                                                            className="ml-4 w-full h-full sm:h-64 object-cover cursor-pointer"
+                                                            style={{ width: "100%" }}
+                                                            onClick={() => openModal(groupIndex * 3 + index)}
+                                                        />
+                                                    );
+                                                }
+                                                return null;
+                                            })}
+                                        </div>
+                                        <div className="md:hidden grid grid-cols-1 sm:grid-cols-1 gap-2">
+                                            {mediaGroup.map((media, index) => {
+                                                if (media.type === 'image' && index < 1) {
+                                                    return (
+                                                        <img
+                                                            key={index}
+                                                            src={media.url} // Use the image URL from the backend
+                                                            alt={`Product media ${groupIndex * 2 + index + 1}`}
+                                                            className="ml-4 w-full h-full sm:h-64 object-cover cursor-pointer"
+                                                            style={{ width: "100%" }}
+                                                            onClick={() => openModal(groupIndex * 2 + index)}
+                                                        />
+                                                    );
+                                                }
+                                                return null;
+                                            })}
+                                        </div>
+                                    </Carousel.Item>
+                                ))}
                             </Carousel>
                         </div>
                     </div>

@@ -27,6 +27,40 @@ const AuctionProductDetails = () => {
     const [auctionData, setAuctionData] = useState(null);
     const [bidderData, setBidderData] = useState({});
     const apiBaseURL = process.env.REACT_APP_API_URL;
+    const [timeRemaining, setTimeRemaining] = useState(null);
+
+    useEffect(() => {
+        if (auctionData) {
+            const endTime = new Date(auctionData.endTime).getTime();
+            const now = new Date().getTime();
+            const timeDiff = endTime - now;
+
+            if (timeDiff > 0) {
+                const intervalId = setInterval(() => {
+                    const updatedTimeDiff = endTime - new Date().getTime();
+                    if (updatedTimeDiff <= 0) {
+                        clearInterval(intervalId);
+                        setTimeRemaining(null);
+                    } else {
+                        setTimeRemaining(updatedTimeDiff);
+                    }
+                }, 1000);
+
+                return () => clearInterval(intervalId);
+            } else {
+                setTimeRemaining(null);
+            }
+        }
+    }, [auctionData]);
+
+    const formatTime = (time) => {
+        const seconds = Math.floor((time / 1000) % 60);
+        const minutes = Math.floor((time / (1000 * 60)) % 60);
+        const hours = Math.floor((time / (1000 * 60 * 60)) % 24);
+        const days = Math.floor(time / (1000 * 60 * 60 * 24));
+
+        return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    };
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -34,7 +68,7 @@ const AuctionProductDetails = () => {
                 const response = await axios.get(`${apiBaseURL}/api/products/${productId}`);
                 if (response.data) {
                     const combinedMedia = [
-                        ...response.data.images.map(image => ({ type: 'image', url: image })),
+                        ...response.data.images.map(image => ({ type: 'image', url: image.imageUrl })),
                         ...response.data.videos.map(video => ({ type: 'video', url: video.videoUrl })),
                     ];
                     setProduct({ ...response.data, combinedMedia });
@@ -351,7 +385,11 @@ const AuctionProductDetails = () => {
                                 ))}
                             </div>
                         </div>
-
+                        {timeRemaining && (
+                            <div className="mt-4">
+                                <h2 className="text-lg font-semibold text-red-600">Time Remaining: {formatTime(timeRemaining)}</h2>
+                            </div>
+                        )}
                         {/* biding */}
                         <div className="max-w-2xl px-1 pb-2 sm:px-6 ">
                             {auctionData && auctionData.status !== 'completed' ? (

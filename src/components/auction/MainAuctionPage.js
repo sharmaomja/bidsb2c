@@ -51,7 +51,6 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
         queryParams.set('isInLiveAuction', 'true');
       }
       const response = await fetch(`${apiBaseURL}/api/auctions/ongoing-auctions/view?${queryParams.toString()}`);
-
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -73,7 +72,6 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
     try {
       const response = await axios.get(`${apiBaseURL}/api/auctions`);
       const data = response.data;
-      console.log(response.data)
       // Fetch bids for each auction and extract top bid
       const previousAuctions = await Promise.all(
         data.map(async (auction) => {
@@ -138,7 +136,7 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
     return <p>Loading auctions...</p>;
   }
 
-  if (!Array.isArray(auctionData.auctions) || auctionData.auctions.length === 0) {
+  if (!Array.isArray(auctionData.auctions) || auctionData.auctions.length === 0 || !Array.isArray(previousAuctionData.auctions) || previousAuctionData.auctions.length === 0) {
     return (
       <div className='flex flex-col items-center mt-36'>
         <p className='font-semibold mb-4 underline'>No ongoing auctions at the moment.</p>
