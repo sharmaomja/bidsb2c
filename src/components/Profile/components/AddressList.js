@@ -14,14 +14,14 @@ const AddressList = ({ addresses, setAddresses, onEditAddress }) => {
     };
 
     return (
-        <div className="flex flex-col gap-4" style={{ maxWidth: '1160px' }}  >
+        <div className="flex flex-col gap-4 lg:w-full"  >
             {addresses.map(address => (
-                <div key={address.addressId} className="border border-gray-500 bg-gray-300 rounded-md p-3" >
+                <div key={address.addressId} className="border border-gray-500 bg-gray-200 rounded-md p-3" >
                     <p className='font-semibold p-1 justify-center flex'>{address.addressLine1}, {address.addressLine2}, {address.city}, {address.state}, {address.postalCode}, {address.country}</p>
                     <div className="flex justify-full gap-2">
                         <button
                             onClick={() => onEditAddress(address)}
-                            className="bg-teal-500 text-white p-2 w-full rounded-md cursor-pointer text-sm hover:bg-teal-600"
+                            className="bg-gray-500 text-white p-2 w-full rounded-md cursor-pointer text-sm hover:bg-teal-600"
                         >
                             <span className="before-content">✏️</span> Edit
                         </button>

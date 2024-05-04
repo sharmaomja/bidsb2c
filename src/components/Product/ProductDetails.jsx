@@ -29,6 +29,7 @@ const ProductDetails = () => {
     const [secureTransaction, setSecureTransaction] = useState(false);
     const [freeDelivery, setFreeDelivery] = useState(false);
     const [deliveryTime, setDeliveryTime] = useState('');
+    const [selectedMediaIndex, setSelectedMediaIndex] = useState(null);
     const apiBaseURL = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
@@ -110,8 +111,6 @@ const ProductDetails = () => {
             fetchReviews();
         }
     }, [productId, apiBaseURL]);
-
-
 
     const handleReviewChange = (e) => {
         setNewReview({ ...newReview, [e.target.name]: e.target.value });
@@ -235,7 +234,7 @@ const ProductDetails = () => {
     };
 
     return (
-        <div className="bg-white flex flex-col min-h-screen min-w-screen">
+        <div className="bg-white flex flex-col min-h-screen min-w-screen overflow-x-hidden">
             <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
@@ -246,12 +245,15 @@ const ProductDetails = () => {
                         height: '80%',
                         margin: 'auto',
                         overflow: 'hidden',
+                        borderRadius: '20px', // Adding some border radius
+                        boxShadow: '0 4px 8px rgba(1, 0, 0, 0.9)' // Adding a shadow
                     },
                     overlay: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.60)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.75            )',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
+                        zIndex: '9999'
                     },
                 }}
             >
@@ -269,15 +271,12 @@ const ProductDetails = () => {
                 <div className="flex justify-center">
                     <button className="bg-red-500 text-white font-bold w-96 h-8 mt-4 rounded-full" onClick={closeModal}>Close</button>
                 </div>
-
             </Modal>
 
-
-            <div className='flex flex-col md:flex-row md:justify-center mt-3 md:mt-0 md:ml-12 md:mr-12'>
-                <div className='flex flex-col md:flex-row md:justify-center mt-4 md:mt-0 md:ml-12 md:mr-12'>
-                    <div className="flex-1 md:min-w-screen md:flex-col" style={{ width: "900px", height: "800px" }}>
-                        <div className='flex-1 md:h-72'>
-                            <Carousel>
+            <div className='flex flex-col md:flex-row md:justify-center pt-10 md:mt-0 md:ml-12 md:mr-12'>
+                <div className="flex-1 md:min-w-screen min-h-screen md:flex-col">
+                    <div className='flex-1 md:h-72'>
+                        <Carousel>
                             {product &&
                                 product.combinedMedia &&
                                 product.combinedMedia.reduce((acc, media, index) => {
@@ -288,46 +287,39 @@ const ProductDetails = () => {
                                     return acc;
                                 }, []).map((mediaGroup, groupIndex) => (
                                     <Carousel.Item key={groupIndex}>
-                                        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-2">
-                                            {mediaGroup.map((media, index) => {
-                                                if (media.type === 'image') {
-                                                    return (
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                            {mediaGroup.map((media, index) => (
+                                                <div key={index} className="relative">
+                                                    {media.type === 'image' ? (
                                                         <img
-                                                            key={index}
-                                                            src={media.url} // Use the image URL from the backend
+                                                            src={media.url}
                                                             alt={`Product media ${groupIndex * 3 + index + 1}`}
-                                                            className="ml-4 w-full h-full sm:h-64 object-cover cursor-pointer"
-                                                            style={{ width: "100%" }}
+                                                            className="w-full h-full object-contain cursor-pointer"
                                                             onClick={() => openModal(groupIndex * 3 + index)}
                                                         />
-                                                    );
-                                                }
-                                                return null;
-                                            })}
-                                        </div>
-                                        <div className="md:hidden grid grid-cols-1 sm:grid-cols-1 gap-2">
-                                            {mediaGroup.map((media, index) => {
-                                                if (media.type === 'image' && index < 1) {
-                                                    return (
-                                                        <img
-                                                            key={index}
-                                                            src={media.url} // Use the image URL from the backend
-                                                            alt={`Product media ${groupIndex * 2 + index + 1}`}
-                                                            className="ml-4 w-full h-full sm:h-64 object-cover cursor-pointer"
-                                                            style={{ width: "100%" }}
-                                                            onClick={() => openModal(groupIndex * 2 + index)}
-                                                        />
-                                                    );
-                                                }
-                                                return null;
-                                            })}
+                                                    ) : null}
+                                                    {media.type === 'video' ? (
+                                                        <video className="w-full h-full object-cover" controls>
+                                                            <source src={media.url} type="video/mp4" />
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                    ) : null}
+                                                    <div className="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md">
+                                                        {media.type === 'image' ? (
+                                                            <i className="fas fa-image text-gray-600"></i>
+                                                        ) : (
+                                                            <i className="fas fa-video text-gray-600"></i>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </Carousel.Item>
                                 ))}
-                            </Carousel>
-                        </div>
+                        </Carousel>
                     </div>
                 </div>
+
 
                 {/* Product info */}
                 <div className='flex-1 mt-2 ml-2 md:ml-0'>
@@ -436,7 +428,6 @@ const ProductDetails = () => {
                                 {addedToWishlist ? 'Added to Wishlist' : 'Add to Wishlist'}
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -511,129 +502,104 @@ const ProductDetails = () => {
 
 
             <div className="flex flex-col mt-24 mb-36 w-full md:ml-24">
-                <div className="lg:flex lg:space-x-8">
+                <div className="flex flex-col mt-8">
                     {/* Write a Review Section */}
-                    <div className="flex-col w-full lg:w-1/3 p-4 bg-white">
-                        <h3 className="text-xl font-bold mb-4">Write a Review</h3>
-                        <textarea
-                            name="body"
-                            value={newReview.body}
-                            onChange={handleReviewChange}
-                            placeholder="Your review..."
-                            className="border border-gray-300 p-2 mb-4 w-full h-32 rounded-md"
-                        />
-                        <div className="mb-4">
-                            <label htmlFor="reviewImage" className="text-m font-semibold text-gray-600">
-                                Upload images (optional):
-                            </label>
-                            <input
-                                type="file"
-                                id="reviewImage"
-                                name="reviewImages"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="mt-2"
-                                multiple
+                    <div className="flex flex-col lg:flex-row space-y-4 lg:space-x-8 lg:space-y-0">
+                        <div className="w-full lg:w-1/3 p-4 bg-white rounded-lg shadow-lg">
+                            <h3 className="text-lg font-semibold mb-2">Write a Review</h3>
+                            <textarea
+                                name="body"
+                                value={newReview.body}
+                                onChange={handleReviewChange}
+                                placeholder="Your review..."
+                                className="border border-gray-300 p-2 mb-2 w-full h-32 rounded-md resize-none"
                             />
-                        </div>
-                        <div className="mb-4 flex items-center">
-                            <StarRatings
-                                rating={rating}
-                                starDimension="30px"
-                                starSpacing="5px"
-                                starRatedColor="#FF9900"
-                                changeRating={setRating}
-                                numberOfStars={5}
-                                name="rating"
-                            />
-                        </div>
-                        <button
-                            onClick={submitReview}
-                            className="bg-teal-500 text-white text-lg px-4 py-2 rounded hover:bg-green-400 w-full"
-                        >
-                            Submit Review
-                        </button>
-                    </div>
-
-                    {/* Customer Reviews Section */}
-                    <div className="lg:w-2/3 p-4">
-                        <div className="mb-4">
-                            <div className="flex justify-start items-center">
-                                <h3 className="text-xl font-semibold">Customer Ratings</h3>
-                                {[1, 2, 3, 4, 5].map((starIndex) => (
-                                    <svg
-                                        key={starIndex}
-                                        className={`text-${starIndex <= averageRating ? 'gray-900' : 'gray-200'} h-5 w-5 flex-shrink-0`}
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                        aria-hidden="true"
-                                    >
-                                        <StarRatings
-                                            rating={starIndex <= averageRating ? 1 : 0}
-                                            starDimension="10px"
-                                            starSpacing="5px"
-                                            starRatedColor="#FF9900"
-                                        />
-                                    </svg>
-                                ))}
+                            <div className="flex items-center mb-2">
+                                <StarRatings
+                                    rating={rating}
+                                    starDimension="20px"
+                                    starSpacing="2px"
+                                    starRatedColor="#FF9900"
+                                    changeRating={setRating}
+                                    numberOfStars={5}
+                                    name="rating"
+                                />
+                                <span className="ml-2 text-gray-600">{rating} / 5</span>
                             </div>
+                            <button
+                                onClick={submitReview}
+                                className="bg-green-400 text-black text-lg px-2 py-1 rounded hover:bg-green-500 w-full"
+                            >
+                                Submit Review
+                            </button>
                         </div>
 
-                        <ul className="space-y-2">
-                            {reviews.slice(0, visibleComments).map((review, index) => (
-                                <li key={index} className="bg-white p-2 rounded-lg shadow-lg" style={{ width: '1050px' }}>
-                                    <div className="flex items-center">
-                                        {[1, 2, 3, 4, 5].map((starIndex) => (
-                                            <svg
-                                                key={starIndex}
-                                                className={`text-${starIndex <= review.rating ? 'gray-900' : 'gray-200'} h-5 w-5 flex-shrink-0`}
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                                aria-hidden="true"
-                                            >
-                                                {/* Your StarRatings component here */}
-                                            </svg>
-                                        ))}
-                                    </div>
-                                    <div className="flex flex-col ml-2 ">
-                                        <div className='flex items-center'>
-                                            <p className="ml-2 text-sm font-medium text-blue-700">
-                                                {review.User.firstName} {review.User.lastName}
-                                            </p>
-                                            <p className="ml-4 text-sm font-medium text-green-500">
-                                                {review.rating} / 5 ⭐
-                                            </p>
-                                        </div>
-                                        <div className="mt-2 ml-2">{review.body}</div>
-                                    </div>
-                                    {review.ReviewImages && review.ReviewImages.length > 0 && (
-                                        <div className="mt-2 ml-4 flex flex-wrap">
-                                            {review.ReviewImages.map((img, imgIndex) => (
-                                                <img
-                                                    key={imgIndex}
-                                                    src={`${apiBaseURL}/${img.imagePath}`}
-                                                    alt={`Review Image ${imgIndex + 1}`}
-                                                    className="object-cover w-32 h-32 mr-2 mb-2"
-                                                />
+                        {/* Customer Reviews Section */}
+                        <div className="w-full lg:w-2/3 p-4 bg-white rounded-lg shadow-lg">
+                            <h3 className="text-lg font-semibold mb-2">Customer Ratings & Reviews</h3>
+                            <div className="flex items-center mb-4">
+                                <div className="mr-2 flex items-center">
+                                    <span className="text-gray-700">Average Rating:</span>
+                                    {[...Array(5)].map((_, index) => (
+                                        <svg
+                                            key={index}
+                                            className={`h-5 w-5 text-yellow-500 fill-current ${index < averageRating ? 'text-yellow-500' : 'text-gray-400'}`}
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                            aria-hidden="true"
+                                        >
+                                            <path d="M10 3.55l1.5 3.75h3.63l-2.93 2.28 1.1 3.35L10 12.11l-3.3 2.82 1.1-3.35-2.93-2.28h3.63l1.5-3.75z" />
+                                        </svg>
+                                    ))}
+                                </div>
+                                <span className="text-gray-700">{averageRating.toFixed(1)} ({reviews.length} reviews)</span>
+                            </div>
+                            <ul className="space-y-4">
+                                {reviews.slice(0, visibleComments).map((review, index) => (
+                                    <li key={index} className="p-4 bg-gray-100 rounded-lg">
+                                        <div className="flex items-center mb-2">
+                                            {[...Array(5)].map((_, index) => (
+                                                <svg
+                                                    key={index}
+                                                    className={`h-5 w-5 text-yellow-500 fill-current ${index < review.rating ? 'text-yellow-500' : 'text-gray-400'}`}
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path d="M10 3.55l1.5 3.75h3.63l-2.93 2.28 1.1 3.35L10 12.11l-3.3 2.82 1.1-3.35-2.93-2.28h3.63l1.5-3.75z" />
+                                                </svg>
                                             ))}
+                                            <span className="ml-2 text-gray-700 font-semibold">{review.User.firstName} {review.User.lastName}</span>
                                         </div>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-
-                        {reviews.length > visibleComments && (
-                            <button
-                                onClick={handleLoadMore}
-                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                            >
-                                Load More
-                            </button>
-                        )}
+                                        <p className="text-gray-800">{review.body}</p>
+                                        {review.ReviewImages && review.ReviewImages.length > 0 && (
+                                            <div className="flex flex-wrap mt-2">
+                                                {review.ReviewImages.map((img, imgIndex) => (
+                                                    <img
+                                                        key={imgIndex}
+                                                        src={`${apiBaseURL}/${img.imagePath}`}
+                                                        alt={`Review Image ${imgIndex + 1}`}
+                                                        className="object-cover w-20 h-20 mr-2 mb-2 rounded-md"
+                                                    />
+                                                ))}
+                                            </div>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                            {reviews.length > visibleComments && (
+                                <button
+                                    onClick={handleLoadMore}
+                                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                >
+                                    Load More
+                                </button>
+                            )}
+                        </div>
                     </div>
-
                 </div>
             </div>
+
         </div>
     );
 };
@@ -641,23 +607,23 @@ const ProductDetails = () => {
 export default ProductDetails;
 
 // <div className="mt-4 p-2 bg-blue-50">
-//                                 <h2 className="text-l ml-2 font-semibold mb-1">Check Estimated Delivery Date</h2>
-//                                 <div className="flex ml-2 items-center space-x-4">
-//                                     <input
-//                                         type="text"
-//                                         placeholder="Enter Pincode"
-//                                         value={pincode}
-//                                         onChange={handlePincodeChange}
-//                                         className="border p-2 h-8 w-64"
-//                                     />
-//                                     <button
-//                                         onClick={handleCheckDeliveryDate}
-//                                         className="bg-blue-500 text-white px-6 py-1 rounded-md hover:bg-blue-600"
-//                                     >
-//                                         Check Delivery Date
-//                                     </button>
-//                                 </div>
-//                                 {deliveryDate && (
-//                                     <p className="mt-2">Estimated Delivery Date: {deliveryDate}</p>
-//                                 )}
-//                             </div>
+//     <h2 className="text-l ml-2 font-semibold mb-1">Check Estimated Delivery Date</h2>
+//     <div className="flex ml-2 items-center space-x-4">
+//         <input
+//             type="text"
+//             placeholder="Enter Pincode"
+//             value={pincode}
+//             onChange={handlePincodeChange}
+//             className="border p-2 h-8 w-64"
+//         />
+//         <button
+//             onClick={handleCheckDeliveryDate}
+//             className="bg-blue-500 text-white px-6 py-1 rounded-md hover:bg-blue-600"
+//         >
+//             Check Delivery Date
+//         </button>
+//     </div>
+//     {deliveryDate && (
+//         <p className="mt-2">Estimated Delivery Date: {deliveryDate}</p>
+//     )}
+// </div>

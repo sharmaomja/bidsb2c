@@ -51,6 +51,7 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
         queryParams.set('isInLiveAuction', 'true');
       }
       const response = await fetch(`${apiBaseURL}/api/auctions/ongoing-auctions/view?${queryParams.toString()}`);
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -72,6 +73,7 @@ const MainAuctionPage = ({ searchTerm, onSearchSubmit }) => {
     try {
       const response = await axios.get(`${apiBaseURL}/api/auctions`);
       const data = response.data;
+      console.log(response.data)
       // Fetch bids for each auction and extract top bid
       const previousAuctions = await Promise.all(
         data.map(async (auction) => {

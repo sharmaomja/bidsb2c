@@ -18,34 +18,43 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
       const queryParams = new URLSearchParams();
       queryParams.append('page', currentPage);
       queryParams.append('limit', limit);
+  
+      // Append search term
+      if (searchTerm && searchTerm.trim() !== '') {
+        queryParams.append('search', searchTerm.trim());
+      }
+  
+      // Append filters
       Object.entries(filters).forEach(([key, value]) => {
-        if (value && value !== '') {
+        if (value && value !== '' && key !== 'minPrice' && key !== 'maxPrice') {
           queryParams.append(key, value);
         }
       });
-      if (searchTerm && searchTerm.trim() !== '') {
-        queryParams.append('search', searchTerm.trim());
-      };
-
+  
+      // Append price range filters separately if they exist
+      if (filters.minPrice && filters.maxPrice) {
+        queryParams.append('minPrice', filters.minPrice);
+        queryParams.append('maxPrice', filters.maxPrice);
+      }
+  
       const response = await fetch(`${apiBaseURL}/api/products-all?${queryParams.toString()}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      console.log('Data',  data)
-      // Extract image URLs using extractImageId function
+  
       const productsWithImages = data.data.map(product => ({
         ...product,
         image: product.image
       }));
-      console.log("Product response", productsWithImages)
+      
       setProducts(productsWithImages);
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Error fetching products:', error);
     }
   };
-
+  
   const handleApplyFilters = (newFilters) => {
     setFilters(newFilters);
     setCurrentPage(1);
@@ -119,7 +128,7 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   };
 
   return (
-    <Container fluid className="p-1">
+     <Container fluid className="p-1">
       <div className="overflow-x-auto h-6 mt-2 bg-yellow-100 text-md font-semibold">
         <marquee className="whitespace-nowrap" direction="right" scrollamount="8">
           Check out our latest auctions and grab amazing deals! <a href="/auctions">Click here to start bidding now!</a>
@@ -252,7 +261,7 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
       </Col>
     </Row>
     
-    </Container>
+    </Container> 
   );
 };
 

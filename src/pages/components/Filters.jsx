@@ -5,11 +5,13 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
     const [categories, setCategories] = useState([]);
     const [attributes, setAttributes] = useState({});
     const [selectedFilters, setSelectedFilters] = useState({});
-    
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+
     const apiBaseURL = process.env.REACT_APP_API_URL;
     console.log(apiBaseURL);
 
-   useEffect(() => {
+    useEffect(() => {
         // Fetch categories
         fetch(`${apiBaseURL}/api/product-categories`)
             .then(response => response.json())
@@ -39,20 +41,11 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
         }
     };
 
-    //const handleInputChange = (e) => {
-    //    onSearch(e.target.value);
-    //};
-
-
-    // const applyFilters = () => {
-    //     // Merge searchTerm and selectedFilters. If searchTerm is already a key in selectedFilters, it will be overwritten.
-    //     const filtersToApply = { ...selectedFilters, searchQuery: searchTerm };
-    //     onApplyFilters(filtersToApply);
-    // };
-
     const applyFilters = () => {
         const filtersToApply = {
             ...selectedFilters,
+            minPrice,
+            maxPrice,
             isInLiveAuction: isInLiveAuction ? 'true' : ''
         };
 
@@ -68,21 +61,21 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
         // Apply filters immediately when checkbox state changes
         handleApplyFilters({ ...selectedFilters, isInLiveAuction: e.target.checked.toString() });
     };
-    
+
     return (
         <aside className="p-4 w-64">
             <h3 className="text-2xl font-semibold mb-4">Filters</h3>
             {showLiveAuctionFilter && (
-            <div className="mb-4 font-semibold">
-                <label className="block mb-2">Live Auctions</label>
-                <input
-                type="checkbox"
-                checked={isInLiveAuction}
-                onChange={handleLiveAuctionChange}
-                className="mr-2"
-                />
-                Only Live Auctions
-            </div>
+                <div className="mb-4 font-semibold">
+                    <label className="block mb-2">Live Auctions</label>
+                    <input
+                        type="checkbox"
+                        checked={isInLiveAuction}
+                        onChange={handleLiveAuctionChange}
+                        className="mr-2"
+                    />
+                    Only Live Auctions
+                </div>
             )}
             <div className="mb-2 w-full">
                 <select
@@ -109,6 +102,22 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
                     </select>
                 </div>
             ))}
+            <div className='space-y-2'>
+                <input
+                    type="number"
+                    placeholder="Min Price"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    className="p-2 w-full border rounded font-bold"
+                />
+                <input
+                    type="number"
+                    placeholder="Max Price"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    className="p-2 w-full border rounded font-bold"
+                />
+            </div>
             <button onClick={applyFilters} className="bg-teal-600 text-white p-2 rounded hover:bg-blue-700 w-full">
                 Apply Filters
             </button>
@@ -117,3 +126,22 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
 };
 
 export default Filters;
+
+// <div className="space-y-2">
+//     <input
+//         type="range"
+//         min="0"
+//         max="1000" // Adjust the max value according to your requirement
+//         value={minPrice}
+//         onChange={(e) => setMinPrice(e.target.value)}
+//         className="w-full"
+//     />
+//     <input
+//         type="range"
+//         min="0"
+//         max="1000" // Adjust the max value according to your requirement
+//         value={maxPrice}
+//         onChange={(e) => setMaxPrice(e.target.value)}
+//         className="w-full"
+//     />
+// </div>

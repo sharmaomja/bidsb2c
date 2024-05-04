@@ -31,7 +31,7 @@ const WishList = () => {
     if (!user) {
       return;
     }
-
+  
     try {
       let cartId;
       const cartResponse = await axios.get(`${apiBaseURL}/api/shopping-cart/${user.userId}`);
@@ -41,7 +41,7 @@ const WishList = () => {
         const newCartResponse = await axios.post(`${apiBaseURL}/api/shopping-cart`, { userId: user.userId });
         cartId = newCartResponse.data.cartId;
       }
-
+  
       await axios.post(`${apiBaseURL}/api/cart-items`, {
         cartId,
         productId,

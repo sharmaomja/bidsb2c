@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getOrdersAsync, updateOrderAsync, selectOrders } from '../components/orderSlice';
-import { PDFDownloadLink, PDFViewer, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { PDFDownloadLink, PDFViewer, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import axios from 'axios'; // Assuming axios is installed
 import { useMediaQuery } from 'react-responsive';
+import logo from '../../../assets/logo2.png';
 
 const UserOrders = () => {
   const dispatch = useDispatch();
@@ -108,7 +109,6 @@ const UserOrders = () => {
   };
 
   const handleTrackOrder = (order) => {
-    // Add your logic to handle tracking the order
     console.log(`Track order with ID: ${order.orderId}`);
   };
 
@@ -117,43 +117,181 @@ const UserOrders = () => {
     const addressLines = cleanedAddress.split("\\n");
     return addressLines.join(', ');
   };
-  
+
+  const numberToWords = (num) => {
+    const units = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+    const tens = ['', 'Ten', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const thousands = ['', 'Thousand', 'Million', 'Billion'];
+    const convert = (num) => {
+      if (num < 10) return units[num];
+      if (num < 20) return teens[num - 10];
+      if (num < 100) return tens[Math.floor(num / 10)] + ' ' + convert(num % 10);
+      if (num < 1000) return units[Math.floor(num / 100)] + ' Hundred ' + convert(num % 100);
+      for (let i = 0; i < thousands.length; i++) {
+        if (num < 1000 ** (i + 1)) {
+          return convert(Math.floor(num / (1000 ** i))) + ' ' + thousands[i] + ' ' + convert(num % (1000 ** i));
+        }
+      }
+    };
+    return convert(num);
+  };
+
+  const totalPriceInWords = (order) => numberToWords(order.totalPrice);
+
+  // Convert total price to words
+
   const Invoice = ({ order }) => (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View className="p-5">
-          <Text className="text-lg font-semibold">Invoice for Order #{order.orderId}</Text>
-          <View className="flex justify-between mt-3">
-            <Text className="text-sm">Order Date: {new Date(order.createdAt).toLocaleDateString()}</Text>
-            <Text className="text-sm">Order Status: {order.orderStatus}</Text>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <Image src={logo} style={styles.logo} />
+            </View>
+            <View style={styles.invoiceInfo}>
+              <Text style={styles.text}>BidsB2C</Text>
+              <Text style={styles.text}>123 Main Street</Text>
+              <Text style={styles.text}>Invoice Date: <Text style={styles.bold}>{new Date(order.createdAt).toLocaleDateString()}</Text></Text>
+              <Text style={styles.text}>Pune, Maharashtra</Text>
+              <Text style={styles.text}>Invoice No: <Text style={styles.bold}>{order.orderId}</Text></Text>
+            </View>
           </View>
-          <Text className="text-sm mt-3">Shipping Address:</Text>
-          <Text className="text-sm">{formatAddress(order.shippingAddress)}</Text>
-          <View className="border-b border-gray-400 mt-5 pb-3">
-            <Text className="text-lg font-semibold">Order Items:</Text>
+          <View style={styles.shippingAddress}>
+            <Text style={[styles.text, styles.bold]}>Shipping Address:</Text>
+            <Text style={styles.text}>{formatAddress(order.shippingAddress)}</Text>
+          </View>
+          <View style={styles.lineItemsContainer}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.heading}>Qty</Text>
+              <Text style={styles.heading}>Description</Text>
+              <Text style={styles.heading}>Price</Text>
+              <Text style={styles.heading}>Subtotal</Text>
+            </View>
             {order.OrderItems.map((item, index) => (
-              <View key={index} className="mt-3">
-                <Text className="text-base font-semibold">{item.Product.name}</Text>
-                <Text className="text-sm">{item.Product.description}</Text>
-                <View className="flex justify-between mt-1">
-                  <Text className="text-sm">Price: ₹ {item.Product.discounted_price}</Text>
-                  <Text className="text-sm">Quantity: {item.quantity}</Text>
-                </View>
+              <View style={styles.tableRow} key={index}>
+                <Text style={[styles.text, styles.tableCell]}>{item.quantity}</Text>
+                <Text style={[styles.text, styles.tableCell]}>{item.Product.name}</Text>
+                <Text style={[styles.text, styles.tableCell, styles.right]}>₹ {item.Product.discounted_price}</Text>
+                <Text style={[styles.text, styles.tableCell, styles.bold]}>₹ {item.quantity * item.Product.discounted_price}</Text>
               </View>
             ))}
           </View>
-          <View className="flex justify-end mt-5">
-            <Text className="text-lg font-semibold">Total Price: ₹ {order.totalPrice}</Text>
+          <View style={styles.paymentInfoContainer}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.heading}>Payment Method</Text>
+              <Text style={styles.heading}>Item Subtotal</Text>
+              <Text style={styles.heading}>Promotion Applied</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={[styles.text, styles.tableCell]}>Credit Card</Text>
+              <Text style={[styles.text, styles.tableCell]}>₹ {order.totalPrice}</Text>
+              <Text style={[styles.text, styles.tableCell]}>N/A</Text>
+            </View>
+            <View style={styles.totalPrice}>
+              <Text style={[styles.text, styles.bold]}>Total Price (in words):</Text>
+              <Text style={styles.text}>{totalPriceInWords(order)}</Text>
+            </View>
+          </View>
+          <View style={styles.footer}>
+            <View style={styles.footerInfo}>
+              <Text style={styles.text}>bidsb2c.com</Text>
+              <Text style={styles.text}>9876543210</Text>
+            </View>
+            <View style={styles.footerThanks}>
+              <Text style={[styles.text, styles.thankYou]}>Thank you!</Text>
+            </View>
           </View>
         </View>
       </Page>
     </Document>
   );
-  
+
   const styles = StyleSheet.create({
     page: {
       backgroundColor: '#ffffff',
       padding: 20,
+    },
+    container: {
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      alignItems: 'stretch',
+      padding: 10,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 30,
+    },
+    logoContainer: {
+      width: '30%',
+    },
+    logo: {
+      height: 50,
+      width: '100%',
+    },
+    invoiceInfo: {
+      width: '65%',
+    },
+    bold: {
+      fontWeight: 'bold',
+    },
+    shippingAddress: {
+      marginBottom: 20,
+    },
+    lineItemsContainer: {
+      marginBottom: 30,
+      border: 1,
+      borderColor: 'black',
+      borderRadius: 5,
+      padding: 5,
+    },
+    tableHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 5,
+    },
+    heading: {
+      fontWeight: 'bold',
+      fontSize: 13,
+    },
+    tableRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 10,
+    },
+    right: {
+      textAlign: 'right',
+    },
+    paymentInfoContainer: {
+      marginBottom: 30,
+    },
+    text: {
+      fontSize: 10,
+    },
+    footer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    footerInfo: {
+      width: '50%',
+    },
+    footerThanks: {
+      width: '50%',
+      textAlign: 'right',
+    },
+    thankYou: {
+      fontWeight: 'bold',
+    },
+    tableCell: {
+      flex: 1,
+      padding: 2,
+      borderRightWidth: 1,
+      borderBottomWidth: 1,
+      borderColor: 'black',
+    },
+    totalPrice: {
+      marginTop: 30,
     },
   });
 

@@ -134,6 +134,7 @@ const Cart = () => {
     
               <div className="flex-1">
                 <h3 className="text-base font-medium text-gray-900">{item.productName}</h3>
+              
                 <div className="flex space-x-10">
                   <div className="text-sm font-semibold">Price: ₹{Math.ceil(item.discountedPrice)}</div>
                   <div className="text-sm font-semibold">Total: ₹{Math.ceil((item.discountedPrice * item.quantity).toFixed(2))}</div>

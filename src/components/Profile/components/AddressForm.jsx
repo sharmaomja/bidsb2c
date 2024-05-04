@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const AddressForm = ({ userId, sessionId, setAddresses, editingAddress, setEditingAddress, setShowAddAddressForm, fetchAddresses }) => {
-    
+
     const [newAddress, setNewAddress] = useState({
         addressLine1: '',
         addressLine2: '',
@@ -60,7 +60,7 @@ const AddressForm = ({ userId, sessionId, setAddresses, editingAddress, setEditi
             : `${apiBaseURL}/users/address`; // Ensure this endpoint matches your server route for adding an address
 
         const method = editingAddress ? 'put' : 'post';
-        
+
         const addressData = {
             ...newAddress,
             userId: userId,
@@ -108,9 +108,9 @@ const AddressForm = ({ userId, sessionId, setAddresses, editingAddress, setEditi
             setMessage('Failed to update address');
         }
     };
-    console.log(typeof setAddresses); 
+    console.log(typeof setAddresses);
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3 lg:w-full">
             <input
                 type="text"
                 name="addressLine1"
