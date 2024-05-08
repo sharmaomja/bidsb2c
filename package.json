@@ -42,7 +42,6 @@
     "tailwindcss": "^3.3.5",
     "web-vitals": "^2.1.4"
   },
-  "proxy": "http://13.201.252.136:8000",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

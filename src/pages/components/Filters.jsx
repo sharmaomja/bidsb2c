@@ -102,22 +102,34 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
                     </select>
                 </div>
             ))}
-            <div className='space-y-2'>
-                <input
-                    type="number"
-                    placeholder="Min Price"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    className="p-2 w-full border rounded font-bold"
-                />
-                <input
-                    type="number"
-                    placeholder="Max Price"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    className="p-2 w-full border rounded font-bold"
-                />
+            <div className='mb-4'>
+                <label className="block mb-2 font-semibold text-gray-800">Price Range</label>
+                <div className="flex items-center space-x-2">
+                    <input
+                        type="range"
+                        min="0"
+                        max="10000" // Adjust the max value based on your price range
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        className="flex-1 appearance-none bg-gray-200 h-1 rounded outline-none"
+                        style={{ background: `linear-gradient(to right, #4CAF50 0%, #4CAF50 ${(minPrice / 10000) * 100}%, #D3D3D3 ${(minPrice / 10000) * 100}%, #D3D3D3 100%)` }}
+                    />
+                    <span className="text-gray-800">{minPrice}</span>
+                </div>
+                <div className="flex items-center space-x-2 mt-2">
+                    <input
+                        type="range"
+                        min="0"
+                        max="10000" // Adjust the max value based on your price range
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        className="flex-1 appearance-none bg-gray-200 h-1 rounded outline-none"
+                        style={{ background: `linear-gradient(to right, #4CAF50 0%, #4CAF50 ${(maxPrice / 10000) * 100}%, #D3D3D3 ${(maxPrice / 10000) * 100}%, #D3D3D3 100%)` }}
+                    />
+                    <span className="text-gray-800">{maxPrice}</span>
+                </div>
             </div>
+
             <button onClick={applyFilters} className="bg-teal-600 text-white p-2 rounded hover:bg-blue-700 w-full">
                 Apply Filters
             </button>

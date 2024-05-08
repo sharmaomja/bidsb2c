@@ -245,19 +245,34 @@ const AuctionProductDetails = () => {
     if (!product) {
         return <div className="loading">Loading...</div>;
     }
+    const uniqueBids = {};
+
+    // Iterate through bids to find the highest bid for each user
+    bids.forEach(bid => {
+        // Check if the user's bid exists in uniqueBids
+        if (!uniqueBids[bid.userId] || bid.bidAmount > uniqueBids[bid.userId].bidAmount) {
+            // If not, or if the current bid is higher, update the user's bid in uniqueBids
+            uniqueBids[bid.userId] = bid;
+        }
+    });
+
+    // Convert uniqueBids object back to an array
+    const uniqueBidsArray = Object.values(uniqueBids);
+
+    // Now you can render uniqueBidsArray instead of bids
 
     return (
         <div className="bg-white flex flex-col min-h-screen">
             <div className="flex flex-col mt-3">
                 <div className="overflow-x-auto h-8 bg-yellow-100 text-md font-semibold">
-                    <marquee className="whitespace-nowrap" direction="right" scrollamount="20">
-                        {bids.map((bid, index) => (
-                            <span key={index} className="text-gray-800 mr-4">
-                                {bidderData[bid.userId] ? `${bidderData[bid.userId].firstName} ${bidderData[bid.userId].lastName}` : 'Unknown Bidder'} - ₹ {bid.bidAmount}
-                            </span>
-                        ))}
-
-                    </marquee>
+                <marquee className="whitespace-nowrap" direction="right" scrollamount="20">
+                {uniqueBidsArray.map((bid, index) => (
+                  <span key={index} className="text-gray-800 mr-4">
+                    {bidderData[bid.userId] ? `${bidderData[bid.userId].firstName} ${bidderData[bid.userId].lastName}` : 'Unknown Bidder'} - ₹ {bid.bidAmount}
+                  </span>
+                ))}
+              </marquee>
+              
                 </div>
             </div>
 
@@ -467,8 +482,8 @@ const AuctionProductDetails = () => {
                                     <th className="px-8 py-3 text-left text-m font-medium text-gray-700 uppercase tracking-wider">Bid Amount</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {bids.slice(0, 5).map((bid, index) => (
+                            <tbody>     
+                                {uniqueBidsArray.slice(0, 5).map((bid, index) => (
                                     <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
                                         <td className="px-8 py-3 whitespace-nowrap text-sm font-semibold">
                                             {/* Display bidder's name */}
@@ -478,6 +493,7 @@ const AuctionProductDetails = () => {
                                     </tr>
                                 ))}
                             </tbody>
+
                         </table>
                     </div>
                 </div>

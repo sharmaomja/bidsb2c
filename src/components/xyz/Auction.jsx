@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 const AuctionComponent = () => {
   const [auctions, setAuctions] = useState([]);
   const [displayLimit, setDisplayLimit] = useState(8);
-  const apiBaseURL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchAuctions();
@@ -12,7 +11,7 @@ const AuctionComponent = () => {
 
   const fetchAuctions = async () => {
     try {
-      const response = await fetch(`${apiBaseURL}/api/auctions-with-products`);
+      const response = await fetch('http://localhost:8000/api/auctions-with-products');
       const data = await response.json();
       setAuctions(data);
     } catch (error) {

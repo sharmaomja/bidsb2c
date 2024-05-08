@@ -189,89 +189,51 @@ const Profile = () => {
                 {`${user.firstName} ${user.lastName}`}
               </h1>
               <h3 className="text-l sm:text-xl font-semibold text-gray-700">
-                {`${profileData.email}`}
+                {profileData.email || 'No email available'}
               </h3>
+              <button
+                className="text-md text-red-500 mt-2 underline"
+                onClick={() => document.getElementById("profilePicture").click()}
+              >
+                Edit profile
+              </button>
+
             </div>
           </div>
 
-          <div className="w-full sm:w-2/3 lg:w-full pl-0 sm:pl-8">
-            <div className="bg-white h-full p-4 sm:p-6 rounded-md shadow-md">
-              <h2 className="text-2xl font-bold mb-4">Buy Virtual Coins</h2>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Coins to Buy</label>
-                <select
-                  className="mt-1 p-2 w-full border rounded-md"
-                  onChange={handleCoinsChange}
-                  value={coinsToBuy}
-                >
-                  <option value={0}>Select an option</option>
-                  <option value={50}>50 coins for Rs. 50</option>
-                  <option value={100}>100 coins for Rs. 100</option>
-                  <option value={200}>200 coins for Rs. 200</option>
-                  <option value={500}>500 coins for Rs. 500</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Custom Coins</label>
-                <input
-                  type="text"
-                  className="mt-1 p-2 w-full border rounded-md"
-                  placeholder="Enter custom coins"
-                  value={customCoins}
-                  onChange={handleCustomCoinsChange}
-                />
-              </div>
-              <p className="mb-2">
-                Total Price: Rs. {calculateTotalPrice()} (Including GST: Rs. {calculateGST()})
-              </p>
-              <p className="text-sm mt-2 text-gray-500 mb-4">
-                The price includes GST at {calculateGSTPercentage()}% rate.
-              </p>
-              <button
-                className="bg-teal-600 mt-4 w-full h-10 text-white p-2 rounded-md hover:bg-teal-700 transition duration-300"
-                onClick={handleBuyCoins}
-                disabled={coinsToBuy === 0 && !customCoins}
-              >
-                Buy Coins
-              </button>
-              <p className="text-sm text-gray-500 mt-2">
-                Note: Your purchase will be subject to our terms and conditions.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
       <div className="w-full sm:w-1/2">
-      <div className="flex flex-col items-start p-4 sm:p-10 bg-yellow-50 shadow-md">
-        <button
-          className="bg-yellow-400 text-white text-3xl sm:text-3xl w-full h-10 mb-4 rounded-full hover:bg-yellow-600 transition duration-300"
-          onClick={toggleAddAddressForm}
-        >
-          +
-        </button>
-        <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4">
-        <AddressList
-          addresses={addresses}
-          setAddresses={setAddresses}
-          onEditAddress={handleEditAddress}
-          className="w-full lg:w-1/2"
-        />
-        {showAddAddressForm && (
-          <AddressForm
-            userId={user.userId}
-            sessionId={sessionId}
-            setAddresses={setAddresses}
-            editingAddress={editingAddress}
-            setShowAddAddressForm={setShowAddAddressForm}
-            setEditingAddress={setEditingAddress}
-            className="w-full lg:w-2/3"
-          />
-        )}
+        <div className="flex flex-col items-start p-4 sm:p-10 bg-yellow-50 shadow-md">
+          <button
+            className="bg-yellow-400 text-white text-3xl sm:text-3xl w-full h-10 mb-4 rounded-full hover:bg-yellow-600 transition duration-300"
+            onClick={toggleAddAddressForm}
+          >
+            +
+          </button>
+          <div className="flex flex-col space-y-4 lg:flex-row lg:space-x-4">
+            <AddressList
+              addresses={addresses}
+              setAddresses={setAddresses}
+              onEditAddress={handleEditAddress}
+              className="w-full lg:w-1/2"
+            />
+            {showAddAddressForm && (
+              <AddressForm
+                userId={user.userId}
+                sessionId={sessionId}
+                setAddresses={setAddresses}
+                editingAddress={editingAddress}
+                setShowAddAddressForm={setShowAddAddressForm}
+                setEditingAddress={setEditingAddress}
+                className="w-full lg:w-2/3"
+              />
+            )}
+          </div>
+
+        </div>
       </div>
-      
-      </div>
-    </div>
-    
+
 
     </div>
 
@@ -279,3 +241,50 @@ const Profile = () => {
 };
 
 export default Profile;
+
+
+// <div className="w-full sm:w-2/3 lg:w-full pl-0 sm:pl-8">
+//   <div className="bg-white h-full p-4 sm:p-6 rounded-md shadow-md">
+//     <h2 className="text-2xl font-bold mb-4">Buy Virtual Coins</h2>
+//     <div className="mb-4">
+//       <label className="block text-sm font-medium text-gray-700">Coins to Buy</label>
+//       <select
+//         className="mt-1 p-2 w-full border rounded-md"
+//         onChange={handleCoinsChange}
+//         value={coinsToBuy}
+//       >
+//         <option value={0}>Select an option</option>
+//         <option value={50}>50 coins for Rs. 50</option>
+//         <option value={100}>100 coins for Rs. 100</option>
+//         <option value={200}>200 coins for Rs. 200</option>
+//         <option value={500}>500 coins for Rs. 500</option>
+//       </select>
+//     </div>
+//     <div className="mb-4">
+//       <label className="block text-sm font-medium text-gray-700">Custom Coins</label>
+//       <input
+//         type="text"
+//         className="mt-1 p-2 w-full border rounded-md"
+//         placeholder="Enter custom coins"
+//         value={customCoins}
+//         onChange={handleCustomCoinsChange}
+//       />
+//     </div>
+//     <p className="mb-2">
+//       Total Price: Rs. {calculateTotalPrice()} (Including GST: Rs. {calculateGST()})
+//     </p>
+//     <p className="text-sm mt-2 text-gray-500 mb-4">
+//       The price includes GST at {calculateGSTPercentage()}% rate.
+//     </p>
+//     <button
+//       className="bg-teal-600 mt-4 w-full h-10 text-white p-2 rounded-md hover:bg-teal-700 transition duration-300"
+//       onClick={handleBuyCoins}
+//       disabled={coinsToBuy === 0 && !customCoins}
+//     >
+//       Buy Coins
+//     </button>
+//     <p className="text-sm text-gray-500 mt-2">
+//       Note: Your purchase will be subject to our terms and conditions.
+//     </p>
+//   </div>
+// </div>

@@ -6,8 +6,8 @@ const AuthForm = () => {
   const [formData, setFormData] = useState({ email: '' });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const apiBaseURL = process.env.REACT_APP_API_URL;
-  
+  const apiBaseURL = 'http://localhost:8000'; // Replace with your actual API URL
+
   const handleEmailChange = (e) => {
     setFormData({ ...formData, email: e.target.value });
   };

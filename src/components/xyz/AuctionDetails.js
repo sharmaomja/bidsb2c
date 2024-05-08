@@ -6,7 +6,6 @@ const AuctionDetails = () => {
   const { auctionId } = useParams();
   const [auction, setAuction] = useState(null);
   const [newBid, setNewBid] = useState('');
-  const apiBaseURL = process.env.REACT_APP_API_URL;
 
   const [bids, setBids] = useState([]);
   const { user } = useAuth();
@@ -20,7 +19,7 @@ const AuctionDetails = () => {
 
   const fetchBids = async () => {
     try {
-      const response = await fetch(`${apiBaseURL}/api/auctions/${auctionId}/bids`);
+      const response = await fetch(`http://localhost:8000/api/auctions/${auctionId}/bids`);
       const data = await response.json();
       setBids(data);
     } catch (error) {
@@ -30,7 +29,7 @@ const AuctionDetails = () => {
 
   const fetchAuctionDetails = async () => {
     try {
-      const response = await fetch(`${apiBaseURL}/api/auctions/${auctionId}`);
+      const response = await fetch(`http://localhost:8000/api/auctions/${auctionId}`);
       const data = await response.json();
       setAuction(data);
     } catch (error) {
@@ -54,7 +53,7 @@ const AuctionDetails = () => {
     };
 
     try {
-      const response = await fetch('${apiBaseURL}/api/bids', {
+      const response = await fetch('http://localhost:8000/api/bids', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
