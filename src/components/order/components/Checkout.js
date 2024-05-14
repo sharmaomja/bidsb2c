@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteItemFromCartAsync, selectItems, updateCartAsync } from '../../cart/components/cartSlice';
 import { useAuth } from '../../../hooks/useAuth';
-import { createOrderAsync } from '../components/orderSlice';
+import { createOrderAsync } from './orderSlice';
 import AddressList from '../../Profile/components/AddressListCheckout';
 import AddressForm from '../../Profile/components/AddressForm';
 import axios from 'axios';
@@ -269,7 +269,7 @@ const Checkout = () => {
                 className={`w-full bg-indigo-400 text-black font-semibold py-2 rounded-md ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
               >
-                {isLoading ? 'Processing...' : 'Place Your Order'}
+                {isLoading ? 'Processing...' : 'Pay & Place your Order'}
               </button>
             </div>
           </div>

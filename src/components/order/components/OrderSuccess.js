@@ -17,8 +17,8 @@ const OrderSuccess = () => {
       // Auto-refresh the orders page after 1 second
       setTimeout(() => {
         window.location.reload();
-      }, 500);
-    }, redirectTimer * 500); // Convert seconds to milliseconds
+      }, 1000);
+    }, redirectTimer * 1000); // Convert seconds to milliseconds
   
     // Clear the timer when the component unmounts
     return () => clearTimeout(timerId);

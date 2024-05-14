@@ -12,6 +12,7 @@ import order from '../../assets/order.png';
 import auction from '../../assets/auction.png';
 import profile from '../../assets/profile.png';
 import logoutd from '../../assets/logoutd.png';
+import policy from '../../assets/policy.png';
 import tracking from '../../assets/tracking.png';
 import returnd from '../../assets/returnd.png';
 import wishlist from '../../assets/wishlist.png';
@@ -133,6 +134,12 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                                             <div className='flex justify-start'>
                                                 <img src={tracking} alt="Return" className="h-6 mr-2" />
                                                 <span className='flex items-center font-semibold'>Track-Orders</span>
+                                            </div>
+                                        </Dropdown.Item>
+                                        <Dropdown.Item as={Link} to="/policies" className="flex items-center px-4 py-2 text-gray-700">
+                                            <div className='flex justify-start'>
+                                                <img src={policy} alt="Return" className="h-6 mr-2" />
+                                                <span className='flex items-center font-semibold'>Policies</span>
                                             </div>
                                         </Dropdown.Item>
 

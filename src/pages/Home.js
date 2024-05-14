@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Filters from './components/Filters';
 import { Container, Row, Col, Pagination, Button } from 'react-bootstrap';
-import Offer from '../components/xyz/Offer';
+import Offer from '../components/random/Offer';
 
 const Home = ({ searchTerm, onSearchSubmit }) => {
   const [products, setProducts] = useState([]);

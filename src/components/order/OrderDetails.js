@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useAuth } from '../../../contexts/AuthContext';
-import { getOrdersAsync, updateOrderAsync, selectOrders } from '../components/orderSlice';
+import { useAuth } from '../../contexts/AuthContext';
+import { getOrdersAsync, updateOrderAsync, selectOrders } from './components/orderSlice';
 import { PDFDownloadLink, PDFViewer, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import axios from 'axios'; // Assuming axios is installed
 import { useMediaQuery } from 'react-responsive';
-import logo from '../../../assets/logo2.png';
+import logo from '../../assets/logo2.png';
 
 const UserOrders = () => {
   const dispatch = useDispatch();
@@ -46,7 +46,6 @@ const UserOrders = () => {
   };
 
   const submitReturnReplaceRequest = async (item) => {
-    // Check if a return request already exists for the item
     const returnInfo = item.Returns && item.Returns.length > 0 ? item.Returns[0] : null;
 
     if (returnInfo && returnInfo.status === 'requested') {
@@ -138,8 +137,6 @@ const UserOrders = () => {
   };
 
   const totalPriceInWords = (order) => numberToWords(order.totalPrice);
-
-  // Convert total price to words
 
   const Invoice = ({ order }) => (
     <Document>
@@ -310,7 +307,6 @@ const UserOrders = () => {
             placeholder="Search by Order ID"
           />
         </div>
-
 
         {currentOrders && currentOrders.length > 0 ? (
           currentOrders.map((order) => {

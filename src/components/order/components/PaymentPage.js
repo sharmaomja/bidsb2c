@@ -25,7 +25,7 @@ const PaymentPage = () => {
       setIsLoading(false);
     }
   };
-  
+
   const formatAddress = (address) => {
     const addressLines = address.split("\\n");
     return addressLines.join(', ');
@@ -33,44 +33,38 @@ const PaymentPage = () => {
 
 
   return (
-    <div className="max-w-2xl mx-auto my-8 p-8 border border-solid border-gray-300 rounded bg-white shadow-md">
-      <h1 className="text-3xl font-bold text-center mb-8">Payment Details</h1>
-      <div className="space-y-4">
-        <div className="mb-4">
-          <p className="font-semibold">Payment Method:</p>
-          <p>{orderDetails.paymentMethod}</p>
-        </div>
-        <div className="mb-4">
-          <p className="font-semibold">Order ID:</p>
-          <p>{orderDetails.orderId}</p>
-        </div>
-        <div className="mb-4">
-          <p className="font-semibold">Total Price:</p>
-          <p>₹{Math.ceil(orderDetails.totalPrice)}</p>
-        </div>
-        <div className="mb-4">
-          <p className="font-semibold">Shipping Address:</p>
-          <p>{formatAddress(orderDetails.shippingAddress)}</p>
-        </div>
+    <div className="max-w-3xl mx-auto my-8 p-8 border border-solid border-gray-300 rounded bg-white shadow-md">
+      <h1 className="text-3xl font-semi bold text-center mb-8 underline">Payment Details</h1>
+      <table className="w-full mb-8">
+        <tbody>
+          <tr>
+            <td className="font-semibold text-gray-700 border-b border-gray-300">Payment Method:</td>
+            <td className="pl-4 text-lg text-gray-900 border-b border-gray-300">{orderDetails.paymentMethod}</td>
+          </tr>
+          <tr>
+            <td className="font-semibold text-gray-700 border-b border-gray-300">Order ID:</td>
+            <td className="pl-4 text-lg text-gray-900 border-b border-gray-300">{orderDetails.orderId}</td>
+          </tr>
+          <tr>
+            <td className="font-semibold text-gray-700 border-b border-gray-300">Total Price:</td>
+            <td className="pl-4 text-lg text-gray-900 border-b border-gray-300">₹{Math.ceil(orderDetails.totalPrice)}</td>
+          </tr>
+          <tr>
+            <td className="font-semibold text-gray-700 border-b border-gray-300">Shipping Address:</td>
+            <td className="pl-4 text-lg text-gray-900 border-b border-gray-300">{formatAddress(orderDetails.shippingAddress)}</td>
+          </tr>
+        </tbody>
+      </table>
 
-        <h2 className="text-xl font-bold mb-4">Order Items:</h2>
-        <div>
-          {orderDetails.items &&
-            orderDetails.items.map((item, index) => (
-              <div key={index} className="bg-gray-100 p-2 border border-solid border-gray-200 rounded mb-2">
-                <p className="font-semibold">{item.productName} - ₹{item.priceAtTime} x {item.quantity}</p>
-              </div>
-            ))}
-        </div>
-      </div>
       <button
         onClick={handlePayment}
         disabled={isLoading}
-        className="block w-full p-4 text-white bg-yellow-500 border-none rounded cursor-pointer transition duration-300 hover:bg-yellow-700 focus:outline-none focus:border-yellow-300"
+        className="block w-full font-bold text-xl p-3 shadow-xl text-white bg-yellow-500 border-none rounded cursor-pointer transition duration-300 hover:bg-yellow-600 focus:outline-none focus:bg-yellow-600 mt-8"
       >
-        {isLoading ? 'Processing...' : 'Complete Purchase'}
+        {isLoading ? 'Processing...' : 'Make Payment'}
       </button>
     </div>
+
   );
 };
 
