@@ -16,8 +16,6 @@ const Cart = () => {
   const [discountedTotal, setDiscountedTotal] = useState(totalAmount);
   const appliedCoupon = useSelector((state) => state.cart.appliedCoupon);
   const discountAmount = useSelector((state) => state.cart.discountAmount);
-
-
   const apiBaseURL = process.env.REACT_APP_API_URL;
   const { fetchCartCount } = useCart();
 
@@ -28,7 +26,7 @@ const Cart = () => {
       dispatch(fetchCartDetailsAsync(userId));
     }
   }, [user, dispatch, fetchCartCount]);
-
+  
   const applyCoupon = async () => {
     if (!couponCode) {
       alert("Please enter a coupon code");
@@ -45,7 +43,6 @@ const Cart = () => {
       if (!response.ok) {
         throw new Error('Failed to apply coupon');
       }
-
       const data = await response.json();
       dispatch(setAppliedCoupon(couponCode));
       dispatch(setDiscountAmount(Number(data.discountAmount) || 0));
@@ -113,71 +110,71 @@ const Cart = () => {
       <h1 className="text-2xl text-center bg-blue-50 font-semibold text-gray-700 mb-4">Shopping Cart</h1>
 
       <div className="grid bg-white grid-cols-12 gap-4">
-      <div className="col-span-12 sm:col-span-8">
-        <div className="p-4 shadow-lg ">
-          {items.map((item) => (
-            <div key={item.productId} className="flex flex-col sm:flex-row items-center border-b border-gray-200 py-4">
-              {/* Mobile View */}
-              <div className="sm:hidden mb-4">
-                <div className="w-16 h-16 overflow-hidden">
-                  {item.productImages && item.productImages[0] && (
-                    <img
-                      src={item.productImages[0]}
-                      alt={item.productName}
-                      className="w-full h-full object-cover object-center"
-                    />
-                  )}
+        <div className="col-span-12 sm:col-span-8">
+          <div className="p-4 shadow-lg ">
+            {items.map((item) => (
+              <div key={item.productId} className="flex flex-col sm:flex-row items-center border-b border-gray-200 py-4">
+                {/* Mobile View */}
+                <div className="sm:hidden mb-4">
+                  <div className="w-16 h-16 overflow-hidden">
+                    {item.productImages && item.productImages[0] && (
+                      <img
+                        src={item.productImages[0]}
+                        alt={item.productName}
+                        className="w-full h-full object-cover object-center"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <h3 className="text-base font-medium text-gray-900">{item.productName}</h3>
+
+                  <div className="flex space-x-10">
+                    <div className="text-sm font-semibold">Price: ₹{Math.ceil(item.discountedPrice)}</div>
+                    <div className="text-sm font-semibold">Total: ₹{Math.ceil((item.discountedPrice * item.quantity).toFixed(2))}</div>
+                  </div>
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden sm:flex items-center ml-4">
+                  <label htmlFor="quantity" className="mr-2 text-sm text-gray-700">Qty</label>
+                  <select
+                    onChange={(e) => handleQuantity(e, item)}
+                    value={item.quantity}
+                    className="border rounded p-1"
+                  >
+                    {[...Array(10).keys()].map((num) => (
+                      <option key={num + 1} value={num + 1}>{num + 1}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="ml-4">
+                  <button
+                    onClick={() => handleRemove(item.cartItemId)}
+                    className="text-sm text-indigo-600 hover:text-indigo-500"
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                {/* Desktop View */}
+                <div className="hidden sm:block ml-4">
+                  <div className="w-16 h-16 overflow-hidden">
+                    {item.productImages && item.productImages[0] && (
+                      <img
+                        src={item.productImages[0]}
+                        alt={item.productName}
+                        className="w-full h-full object-cover object-center"
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
-    
-              <div className="flex-1">
-                <h3 className="text-base font-medium text-gray-900">{item.productName}</h3>
-              
-                <div className="flex space-x-10">
-                  <div className="text-sm font-semibold">Price: ₹{Math.ceil(item.discountedPrice)}</div>
-                  <div className="text-sm font-semibold">Total: ₹{Math.ceil((item.discountedPrice * item.quantity).toFixed(2))}</div>
-                </div>
-              </div>
-    
-              {/* Desktop View */}
-              <div className="hidden sm:flex items-center ml-4">
-                <label htmlFor="quantity" className="mr-2 text-sm text-gray-700">Qty</label>
-                <select
-                  onChange={(e) => handleQuantity(e, item)}
-                  value={item.quantity}
-                  className="border rounded p-1"
-                >
-                  {[...Array(10).keys()].map((num) => (
-                    <option key={num + 1} value={num + 1}>{num + 1}</option>
-                  ))}
-                </select>
-              </div>
-    
-              <div className="ml-4">
-                <button
-                  onClick={() => handleRemove(item.cartItemId)}
-                  className="text-sm text-indigo-600 hover:text-indigo-500"
-                >
-                  Remove
-                </button>
-              </div>
-    
-              {/* Desktop View */}
-              <div className="hidden sm:block ml-4">
-                <div className="w-16 h-16 overflow-hidden">
-                  {item.productImages && item.productImages[0] && (
-                    <img
-                      src={item.productImages[0]}
-                      alt={item.productName}
-                      className="w-full h-full object-cover object-center"
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
         <div className="col-span-12 sm:hidden">
           <div className="bg-white p-4 shadow-lg">

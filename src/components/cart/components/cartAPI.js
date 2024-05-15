@@ -15,6 +15,7 @@ export function addToCart(cartId, productId, quantity) {
         body: JSON.stringify(payload),
         headers: { 'Content-Type': 'application/json' },
       });
+      console.log(response)
 
       if (response.ok) {
         const data = await response.json();
