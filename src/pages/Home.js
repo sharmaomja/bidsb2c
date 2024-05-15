@@ -10,7 +10,7 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState({});
   const apiBaseURL = process.env.REACT_APP_API_URL;
-  const [limit, setLimit] = useState(9);
+  const [limit, setLimit] = useState(8);
   const [showFilters, setShowFilters] = useState(false);
 
   const fetchProducts = async () => {

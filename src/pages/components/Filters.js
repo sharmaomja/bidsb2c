@@ -62,6 +62,14 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
         handleApplyFilters({ ...selectedFilters, isInLiveAuction: e.target.checked.toString() });
     };
 
+    const resetFilters = () => {
+        setSelectedFilters({});
+        setMinPrice('');
+        setMaxPrice('');
+        setIsInLiveAuction(false);
+        onApplyFilters({});
+    };
+
     return (
         <aside className="p-4 w-64">
             <h3 className="text-2xl font-semibold mb-4">Filters</h3>
@@ -88,20 +96,7 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
                     ))}
                 </select>
             </div>
-            {Object.keys(attributes).map(attr => (
-                <div key={attr} className="mb-4 font-semibold">
-                    <label className="block mb-2">{attr}</label>
-                    <select
-                        onChange={(e) => handleFilterChange(attr, e.target.value)}
-                        className="p-2 w-full border rounded"
-                    >
-                        <option value="">{`Select ${attr}`}</option>
-                        {attributes[attr].map(value => (
-                            <option key={value} value={value}>{value}</option>
-                        ))}
-                    </select>
-                </div>
-            ))}
+            {/* Add Attributes here*/}
             <div className='mb-4'>
                 <label className="block mb-2 font-semibold text-gray-800">Price Range</label>
                 <div className="flex items-center space-x-2">
@@ -130,14 +125,35 @@ const Filters = ({ onSearch, searchTerm, onApplyFilters, isInLiveAuction, setIsI
                 </div>
             </div>
 
-            <button onClick={applyFilters} className="bg-teal-600 text-white p-2 rounded hover:bg-blue-700 w-full">
+            <button onClick={applyFilters} className="bg-teal-500 text-white p-2 rounded hover:bg-blue-700 w-full">
                 Apply Filters
             </button>
+            <button onClick={resetFilters} className="mt-2 bg-red-600 text-white p-2 rounded hover:bg-red-700 w-full">
+            Remove Filters
+        </button>
         </aside>
     );
 };
 
 export default Filters;
+
+
+
+// {Object.keys(attributes).map(attr => (
+//     <div key={attr} className="mb-4 font-semibold">
+//         <label className="block mb-2">{attr}</label>
+//         <select
+//             onChange={(e) => handleFilterChange(attr, e.target.value)}
+//             className="p-2 w-full border rounded"
+//         >
+//             <option value="">{`Select ${attr}`}</option>
+//             {attributes[attr].map(value => (
+//                 <option key={value} value={value}>{value}</option>
+//             ))}
+//         </select>
+//     </div>
+// ))}
+
 
 // <div className="space-y-2">
 //     <input
