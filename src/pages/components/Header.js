@@ -36,7 +36,7 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
     };
 
     const location = useLocation();
-    const isHomePage = location.pathname === '/bidsb2c';
+    const isHomePage = location.pathname === '/bidsb2c' || location.pathname === '/';
 
     return (
         <div>
@@ -151,12 +151,19 @@ const Header = ({ searchTerm, setSearchTerm, onSearch, onApplyFilters }) => {
                                         </Dropdown.Item>
                                     </>
                                 ) : (
-                                    <Dropdown.Item as={Link} to="/auth" className="block px-2 py-1 text-gray-700">
-                                        <div className='flex justify-start'>
-                                            <img src={login} alt="Logout" className="h-6 w-24 mr-1" />
-                                            <span className='flex items-center font-semibold'>Login/Register</span>
+                                    <Dropdown.Item className="block px-2 py-1 text-gray-900">
+                                        <div className="flex flex-col space-y-2">
+                                            <Link to="/policies" className="flex items-center px-2 py-1 bg-yellow-100 hover:bg-yellow-200 rounded-md">
+                                                <img src={policy} alt="Policies" className="h-6 w-6 mr-2" />
+                                                <span className="font-semibold">Policies</span>
+                                            </Link>
+                                            <Link to="/auth" className="flex items-center px-2 py-1 bg-yellow-100 hover:bg-yellow-200 rounded-md">
+                                                <img src={login} alt="Login/Register" className="h-5 w-5 mr-1" />
+                                                <span className="font-semibold">Login/Register</span>
+                                            </Link>
                                         </div>
                                     </Dropdown.Item>
+
                                 )}
                             </Dropdown.Menu>
                         </Dropdown>

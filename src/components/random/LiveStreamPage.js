@@ -15,7 +15,7 @@ const LiveStreamPage = ({ auctionId }) => {
     setStreamUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ'); // Dummy URL
 
     // Initialize WebSocket connection
-    const newSocket = io('http://localhost:8000');
+    const newSocket = io('https://13.201.252.136:8443');
     setSocket(newSocket);
 
     return () => newSocket.disconnect();
