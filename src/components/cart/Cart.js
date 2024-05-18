@@ -26,7 +26,7 @@ const Cart = () => {
       dispatch(fetchCartDetailsAsync(userId));
     }
   }, [user, dispatch, fetchCartCount]);
-  
+
   const applyCoupon = async () => {
     if (!couponCode) {
       alert("Please enter a coupon code");
@@ -277,3 +277,15 @@ const Cart = () => {
 };
 
 export default Cart;
+
+
+
+// <div className="w-16 h-16 overflow-hidden">
+//   {item.productImages && item.productImages[0] && (
+//     <img
+//       src={item.productImages[0]}
+//       alt={item.productName}
+//       className="w-full h-full object-cover object-center"
+//     />
+//   )}
+// </div>

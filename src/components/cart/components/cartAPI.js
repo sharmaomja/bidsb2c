@@ -8,15 +8,11 @@ export function addToCart(cartId, productId, quantity) {
         productId,
         quantity
       };
-      console.log(payload)
-
       const response = await fetch(`${apiBaseURL}/api/cart-items`, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: { 'Content-Type': 'application/json' },
       });
-      console.log(response)
-
       if (response.ok) {
         const data = await response.json();
         resolve({ data });
@@ -30,18 +26,14 @@ export function addToCart(cartId, productId, quantity) {
   });
 }
 
-
 export function fetchItemsByUserId(userId) {
   return new Promise(async (resolve) => {
     try {
-      console.log(userId);
       const response = await fetch(`${apiBaseURL}/api/user/${userId}/cart-products`);
-
       if (response.ok) {
         const data = await response.json();
         resolve({ data });
       } else if (response.status === 404) {
-        // Handle the case where the cart is empty
         resolve({ data: [] });
       } else {
         const errorData = await response.json();

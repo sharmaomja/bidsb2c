@@ -19,12 +19,23 @@ export const addToCartAsync = createAsyncThunk(
 export const fetchItemsByUserIdAsync = createAsyncThunk(
   'cart/fetchItemsByUserId',
   async (userId) => {
-    const response = await fetchItemsByUserId(userId);
-
-    if (response.data) {
-      return response.data;
-    } else {
-      throw new Error(response.error.message || 'Failed to fetch cart items');
+    try {
+      const response = await fetchItemsByUserId(userId);
+      
+      if (response.data) {
+        // Assuming response.data is an array of items
+        const itemsWithDiscount = response.data.map(item => ({
+          ...item,
+          // Check both property names for product description
+          productDescription: item.productDescription || item.productDescriptiom,
+          discountedPrice: item.discountedPrice // Assuming discountedPrice is returned by the backend
+        }));
+        return itemsWithDiscount;
+      } else {
+        throw new Error(response.error.message || 'Failed to fetch cart items');
+      }
+    } catch (error) {
+      throw error;
     }
   }
 );

@@ -39,11 +39,9 @@ export async function addToWishlist(item, userId) {
 
 export async function fetchWishlistItemsByUserId(userId) {
   const response = await fetch(`${apiBaseURL}/api/wishlist/${userId}/items`);
-
   if (!response.ok) {
     throw new Error('Error fetching wishlist items');
   }
-
   return response.json();
 }
 

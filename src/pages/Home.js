@@ -129,11 +129,11 @@ const Home = ({ searchTerm, onSearchSubmit }) => {
 
   return (
      <Container fluid className="p-1">
-      <div className="overflow-x-auto h-6 mt-2 bg-yellow-100 text-md font-semibold">
+{/*      <div className="overflow-x-auto h-6 mt-2 bg-yellow-100 text-md font-semibold">
         <marquee className="whitespace-nowrap" direction="right" scrollamount="8">
           Check out our latest auctions and grab amazing deals! <a href="/auctions">Click here to start bidding now!</a>
         </marquee>
-      </div>
+  </div>*/}
       <Row>
       {/* Left section (1:4) */}
       <Col md={4} lg={2} className="border-right border-gray-300 hidden md:block">

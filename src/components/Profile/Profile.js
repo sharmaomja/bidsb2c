@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import profile from '../../assets/profile.gif';
 import AddressList from './components/AddressList';
 import AddressForm from './components/AddressForm';
 
@@ -11,12 +10,8 @@ const Profile = () => {
   const [addresses, setAddresses] = useState([]);
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
-  const [profilePicture, setProfilePicture] = useState(null);
   const [uploadedProfilePicture, setUploadedProfilePicture] = useState(null);
-  const [coinsToBuy, setCoinsToBuy] = useState(0);
-  const [customCoins, setCustomCoins] = useState('');
   const apiBaseURL = process.env.REACT_APP_API_URL;
-
 
   useEffect(() => {
     if (user && user.userId) {
@@ -34,20 +29,14 @@ const Profile = () => {
       const response = await axios.get(`${apiBaseURL}/users/${userId}`, config);
       const userData = response.data;
       if (userData) {
-        // Instead of accessing images directly, access UserProfilePicture.imageUrl
-        const combinedMedia = [
-          { type: 'image', url: userData.UserProfilePicture.imageUrl }
-        ];
-        // Set the received user data in the state
         setProfileData(userData);
-        setUploadedProfilePicture(userData?.UserProfilePicture?.signedUrl);
         fetchAddresses(userId);
+        setUploadedProfilePicture(userData?.UserProfilePicture?.signedUrl);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
   };
-
 
   const fetchAddresses = async (userId) => {
     try {
@@ -79,7 +68,6 @@ const Profile = () => {
       console.error("No file selected.");
       return;
     }
-
     try {
       const presignedUrlResponse = await axios.get(`${apiBaseURL}/users/generateUploadURL/${user.userId}?fileType=${file.type}`, {
         headers: {
@@ -109,49 +97,6 @@ const Profile = () => {
     }
   };
 
-  const handleCoinsChange = (event) => {
-    setCoinsToBuy(Number(event.target.value));
-  };
-
-  const handleCustomCoinsChange = (event) => {
-    setCustomCoins(event.target.value);
-  };
-
-  const calculateTotalPrice = () => {
-    const pricePerCoin = 1;
-    const gstPercentage = 18;
-
-    let totalCoins = coinsToBuy;
-    if (customCoins && !isNaN(customCoins)) {
-      totalCoins = parseFloat(customCoins);
-    }
-
-    const totalPrice = totalCoins * pricePerCoin;
-    const gstAmount = (totalPrice * gstPercentage) / 100;
-    const totalAmount = totalPrice + gstAmount;
-
-    return totalAmount.toFixed(2);
-  };
-
-  const handleBuyCoins = () => {
-    // Implement the logic for buying coins
-    const totalAmount = calculateTotalPrice();
-    console.log(`Buying ${coinsToBuy} coins for Rs. ${totalAmount}`);
-    // Add API call or other logic here
-  };
-
-  const calculateGST = () => {
-    const totalPrice = calculateTotalPrice();
-    const gstPercentage = 8;
-    const gstAmount = (totalPrice * gstPercentage) / 100;
-    return gstAmount.toFixed(2);
-  };
-
-  const calculateGSTPercentage = () => {
-    return 8;
-  };
-
-
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -162,12 +107,16 @@ const Profile = () => {
         <div className="flex flex-col items-start p-4 sm:p-10 bg-yellow-50 shadow-md">
           <div className="flex flex-col sm:flex-row items-center mb-4 sm:mb-6 ml-0 sm:ml-6">
             <div className="relative w-full h-full lg:w-48 lg:h-48 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md">
-              {profileData && profileData.UserProfilePicture && (
+              {uploadedProfilePicture ? (
                 <img
-                  src={profileData.UserProfilePicture.imageUrl}
+                  src={uploadedProfilePicture}
                   alt="Profile"
                   className="w-full h-full lg:w-48 lg:h-48 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md border-4 border-white object-cover"
                 />
+              ) : (
+                <div className="w-full h-full lg:w-48 lg:h-48 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md border-4 border-white flex items-center justify-center bg-gray-200">
+                  <span className="text-gray-500">No profile picture</span>
+                </div>
               )}
               <label
                 htmlFor="profilePicture"
@@ -189,7 +138,7 @@ const Profile = () => {
                 {`${user.firstName} ${user.lastName}`}
               </h1>
               <h3 className="text-l sm:text-xl font-semibold text-gray-700">
-                {profileData.email || 'No email available'}
+                {user.email || 'No email available'}
               </h3>
               <button
                 className="text-md text-red-500 mt-2 underline"
@@ -197,10 +146,8 @@ const Profile = () => {
               >
                 Edit profile
               </button>
-
             </div>
           </div>
-
         </div>
       </div>
       <div className="w-full sm:w-1/2">
@@ -230,61 +177,10 @@ const Profile = () => {
               />
             )}
           </div>
-
         </div>
       </div>
-
-
     </div>
-
   );
 };
 
 export default Profile;
-
-
-// <div className="w-full sm:w-2/3 lg:w-full pl-0 sm:pl-8">
-//   <div className="bg-white h-full p-4 sm:p-6 rounded-md shadow-md">
-//     <h2 className="text-2xl font-bold mb-4">Buy Virtual Coins</h2>
-//     <div className="mb-4">
-//       <label className="block text-sm font-medium text-gray-700">Coins to Buy</label>
-//       <select
-//         className="mt-1 p-2 w-full border rounded-md"
-//         onChange={handleCoinsChange}
-//         value={coinsToBuy}
-//       >
-//         <option value={0}>Select an option</option>
-//         <option value={50}>50 coins for Rs. 50</option>
-//         <option value={100}>100 coins for Rs. 100</option>
-//         <option value={200}>200 coins for Rs. 200</option>
-//         <option value={500}>500 coins for Rs. 500</option>
-//       </select>
-//     </div>
-//     <div className="mb-4">
-//       <label className="block text-sm font-medium text-gray-700">Custom Coins</label>
-//       <input
-//         type="text"
-//         className="mt-1 p-2 w-full border rounded-md"
-//         placeholder="Enter custom coins"
-//         value={customCoins}
-//         onChange={handleCustomCoinsChange}
-//       />
-//     </div>
-//     <p className="mb-2">
-//       Total Price: Rs. {calculateTotalPrice()} (Including GST: Rs. {calculateGST()})
-//     </p>
-//     <p className="text-sm mt-2 text-gray-500 mb-4">
-//       The price includes GST at {calculateGSTPercentage()}% rate.
-//     </p>
-//     <button
-//       className="bg-teal-600 mt-4 w-full h-10 text-white p-2 rounded-md hover:bg-teal-700 transition duration-300"
-//       onClick={handleBuyCoins}
-//       disabled={coinsToBuy === 0 && !customCoins}
-//     >
-//       Buy Coins
-//     </button>
-//     <p className="text-sm text-gray-500 mt-2">
-//       Note: Your purchase will be subject to our terms and conditions.
-//     </p>
-//   </div>
-// </div>
