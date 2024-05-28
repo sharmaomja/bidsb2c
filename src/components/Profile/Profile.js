@@ -11,13 +11,15 @@ const Profile = () => {
   const [showAddAddressForm, setShowAddAddressForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [uploadedProfilePicture, setUploadedProfilePicture] = useState(null);
+  const [coinsToBuy, setCoinsToBuy] = useState(0);
+  const [customCoins, setCustomCoins] = useState('');
   const apiBaseURL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (user && user.userId) {
       fetchUserData(user.userId);
     }
-  }, [user]);
+  }, [user, sessionId]); // Added sessionId to the dependencies
 
   const fetchUserData = async (userId) => {
     try {
@@ -30,8 +32,8 @@ const Profile = () => {
       const userData = response.data;
       if (userData) {
         setProfileData(userData);
-        fetchAddresses(userId);
         setUploadedProfilePicture(userData?.UserProfilePicture?.signedUrl);
+        fetchAddresses(userId);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -68,6 +70,7 @@ const Profile = () => {
       console.error("No file selected.");
       return;
     }
+
     try {
       const presignedUrlResponse = await axios.get(`${apiBaseURL}/users/generateUploadURL/${user.userId}?fileType=${file.type}`, {
         headers: {
@@ -78,12 +81,12 @@ const Profile = () => {
       await axios.put(presignedUrl, file, {
         headers: {
           'Content-Type': file.type,
-          'Authorization': undefined
+          'Authorization': undefined // Ensure this is intentional
         },
       });
       setUploadedProfilePicture(imageUrl);
       await axios.post(`${apiBaseURL}/users/update-profile-picture/${user.userId}`,
-        { imageUrl: imageUrl }, // Sending the image URL to the backend
+        { imageUrl: imageUrl },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -97,6 +100,36 @@ const Profile = () => {
     }
   };
 
+  const handleCoinsChange = (event) => {
+    setCoinsToBuy(Number(event.target.value));
+  };
+
+  const handleCustomCoinsChange = (event) => {
+    setCustomCoins(event.target.value);
+  };
+
+  const calculateTotalPrice = () => {
+    const pricePerCoin = 1;
+    const gstPercentage = 18;
+
+    let totalCoins = coinsToBuy;
+    if (customCoins && !isNaN(customCoins)) {
+      totalCoins = parseFloat(customCoins);
+    }
+
+    const totalPrice = totalCoins * pricePerCoin;
+    const gstAmount = (totalPrice * gstPercentage) / 100;
+    const totalAmount = totalPrice + gstAmount;
+
+    return totalAmount.toFixed(2);
+  };
+
+  const handleBuyCoins = () => {
+    const totalAmount = calculateTotalPrice();
+    console.log(`Buying ${coinsToBuy} coins for Rs. ${totalAmount}`);
+    // Add API call or other logic here
+  };
+
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -105,32 +138,32 @@ const Profile = () => {
     <div className="flex flex-col sm:flex-row mt-10 ml-10 mr-10">
       <div className="w-full sm:w-1/2 pr-0 sm:pr-8">
         <div className="flex flex-col items-start p-4 sm:p-10 bg-yellow-50 shadow-md">
-          <div className="flex flex-col sm:flex-row items-center mb-4 sm:mb-6 ml-0 sm:ml-6">
-            <div className="relative w-full h-full lg:w-48 lg:h-48 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md">
-              {uploadedProfilePicture ? (
-                <img
-                  src={uploadedProfilePicture}
-                  alt="Profile"
-                  className="w-full h-full lg:w-48 lg:h-48 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md border-4 border-white object-cover"
-                />
-              ) : (
-                <div className="w-full h-full lg:w-48 lg:h-48 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md border-4 border-white flex items-center justify-center bg-gray-200">
-                  <span className="text-gray-500">No profile picture</span>
-                </div>
-              )}
-              <label
-                htmlFor="profilePicture"
-                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 cursor-pointer opacity-0 transition-opacity duration-300 hover:opacity-100"
-              >
-                <span className="text-white text-3xl">+</span>
-              </label>
-              <input
-                type="file"
-                id="profilePicture"
-                accept="image/*"
-                className="hidden"
-                onChange={handleProfilePictureChange}
-              />
+        <div className="flex flex-col sm:flex-row items-center mb-4 sm:mb-6 ml-0 sm:ml-6">
+        <div className="relative w-full h-full lg:w-48 lg:h-48 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md">
+          {profileData && profileData.UserProfilePicture ? (
+            <img
+              src={profileData.UserProfilePicture.imageUrl}
+              alt="Profile"
+              className="w-full h-full lg:w-48 lg:h-48 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md border-4 border-white object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full lg:w-48 lg:h-48 mx-auto mb-4 sm:mb-0 sm:mr-6 overflow-hidden rounded-md border-4 border-white bg-gray-200">
+              <span className="text-gray-600">No profile image</span>
+            </div>
+          )}
+          <label
+            htmlFor="profilePicture"
+            className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 cursor-pointer opacity-0 transition-opacity duration-300 hover:opacity-100"
+          >
+            <span className="text-white text-3xl">+</span>
+          </label>
+          <input
+            type="file"
+            id="profilePicture"
+            accept="image/*"
+            className="hidden"
+            onChange={handleProfilePictureChange}
+          />
             </div>
 
             <div className="ml-0 sm:ml-6">
@@ -138,13 +171,13 @@ const Profile = () => {
                 {`${user.firstName} ${user.lastName}`}
               </h1>
               <h3 className="text-l sm:text-xl font-semibold text-gray-700">
-                {user.email || 'No email available'}
+                {profileData.email || 'No email available'}
               </h3>
               <button
                 className="text-md text-red-500 mt-2 underline"
                 onClick={() => document.getElementById("profilePicture").click()}
               >
-                Edit profile
+                Update profile picture
               </button>
             </div>
           </div>

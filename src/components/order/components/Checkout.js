@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { deleteItemFromCartAsync, selectItems, updateCartAsync } from '../../cart/components/cartSlice';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { deleteItemFromCartAsync } from '../../cart/components/cartSlice';
 import { useAuth } from '../../../hooks/useAuth';
-import { createOrderAsync } from './orderSlice';
-import AddressList from '../../Profile/components/AddressListCheckout';
 import AddressForm from '../../Profile/components/AddressForm';
 import axios from 'axios';
 import { OrderContext } from '../../../contexts/OrderContext';
