@@ -18,11 +18,10 @@ const AuctionProductDetails = () => {
     const [paymentType, setPaymentType] = useState('direct');
     const [bidSuccess, setBidSuccess] = useState(false);
     const [bids, setBids] = useState([]);
-    const [userData, setUserData] = useState(null);
-    const [newReview, setNewReview] = useState({ title: '', body: '', rating: 0 });
-    const [rating, setRating] = useState(0);
-    const [reviews, setReviews] = useState([]);
-    const [reviewImages, setReviewImages] = useState(null);
+    const [newQna, setNewQna] = useState({ title: '', body: '' });
+    const [qnas, setQnas] = useState([]);
+    const [newReply, setNewReply] = useState({ body: '' });
+    const [parentId, setParentId] = useState(null);
     const [visibleComments, setVisibleComments] = useState(5);
     const [auctionData, setAuctionData] = useState(null);
     const [bidderData, setBidderData] = useState({});
@@ -172,64 +171,75 @@ const AuctionProductDetails = () => {
         }
     };
 
-    const submitReview = async () => {
+    useEffect(() => {
+        fetchQnas();
+    }, []);
+
+    const fetchQnas = async () => {
+        try {
+            const response = await axios.get(`${apiBaseURL}/api/products/${productId}/qna`);
+            setQnas(response.data);
+        } catch (error) {
+            console.error('Error fetching Q&As:', error);
+        }
+    };
+
+    const submitQna = async () => {
         if (!user) {
-            alert("Please log in to submit reviews.");
+            alert("Please log in to submit questions.");
             return;
         }
 
         try {
-            const formData = new FormData();
-            formData.append('productId', productId);
-            formData.append('userId', user.userId);
-            formData.append('title', newReview.title);
-            formData.append('body', newReview.body);
-            formData.append('rating', rating);
-
-            // Append each selected image to the formData
-            if (reviewImages) {
-                reviewImages.forEach((file, index) => {
-                    formData.append('reviewImages', file, `image${index}.png`);
-                });
-            }
-
-            const response = await axios.post(`${apiBaseURL}/api/product-reviews`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+            const response = await axios.post(`${apiBaseURL}/api/auction-qna`, {
+                productId: productId,
+                userId: user.userId,
+                title: newQna.title,
+                body: newQna.body,
+                parentId: null
             });
 
-            console.log("Review submitted", response.data);
-
-            // Reload the page after submitting the review
-            window.location.reload();
+            console.log("Q&A submitted", response.data);
+            setNewQna({ title: '', body: '' });
+            fetchQnas();
         } catch (error) {
-            console.error('Error submitting review:', error);
+            console.error('Error submitting Q&A:', error);
+        }
+    };
+
+    const submitReply = async (parentId) => {
+        if (!user) {
+            alert("Please log in to submit replies.");
+            return;
         }
 
-        setNewReview({ title: '', body: '', rating: 0 });
-        setRating(0);
-        setReviewImages([]); // Clear the selected images after submission
+        try {
+            const response = await axios.post(`${apiBaseURL}/api/auction-qna`, {
+                productId: productId,
+                userId: user.userId,
+                title: '',
+                body: newReply.body,
+                parentId: parentId
+            });
+
+            console.log("Reply submitted", response.data);
+            setNewReply({ body: '' });
+            fetchQnas();
+        } catch (error) {
+            console.error('Error submitting reply:', error);
+        }
     };
 
-    const handleImageChange = async (e) => {
-        const selectedFiles = Array.from(e.target.files);
-
-        // Update the state directly with the File objects
-        setReviewImages(selectedFiles);
+    const handleQnaChange = (e) => {
+        setNewQna({ ...newQna, [e.target.name]: e.target.value });
     };
 
-    const averageRating = reviews.length > 0
-        ? reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length
-        : 0;
+    const handleReplyChange = (e) => {
+        setNewReply({ ...newReply, [e.target.name]: e.target.value });
+    };
 
     const handleLoadMore = () => {
-        // Increase the visible comments by a certain amount (e.g., 5 more comments)
         setVisibleComments((prevVisibleComments) => prevVisibleComments + 5);
-    };
-
-    const handleReviewChange = (e) => {
-        setNewReview({ ...newReview, [e.target.name]: e.target.value });
     };
 
     const openModal = (index) => {
@@ -262,17 +272,17 @@ const AuctionProductDetails = () => {
     // Now you can render uniqueBidsArray instead of bids
 
     return (
-        <div className="bg-white flex flex-col min-h-screen">
+        <div className="bg-white flex flex-col min-h-screen min-w-screen overflow-x-hidden">
             <div className="flex flex-col mt-3">
                 <div className="overflow-x-auto h-8 bg-yellow-100 text-md font-semibold">
-                <marquee className="whitespace-nowrap" direction="right" scrollamount="20">
-                {uniqueBidsArray.map((bid, index) => (
-                  <span key={index} className="text-gray-800 mr-4">
-                    {bidderData[bid.userId] ? `${bidderData[bid.userId].firstName} ${bidderData[bid.userId].lastName}` : 'Unknown Bidder'} - ₹ {bid.bidAmount}
-                  </span>
-                ))}
-              </marquee>
-              
+                    <marquee className="whitespace-nowrap" direction="right" scrollamount="20">
+                        {uniqueBidsArray.map((bid, index) => (
+                            <span key={index} className="text-gray-800 mr-4">
+                                {bidderData[bid.userId] ? `${bidderData[bid.userId].firstName} ${bidderData[bid.userId].lastName}` : 'Unknown Bidder'} - ₹ {bid.bidAmount}
+                            </span>
+                        ))}
+                    </marquee>
+
                 </div>
             </div>
 
@@ -282,16 +292,19 @@ const AuctionProductDetails = () => {
                 contentLabel="Product Image Modal"
                 style={{
                     content: {
-                        width: '35%',
-                        height: '70%',
-                        margin: '0 auto',
+                        width: '40%',
+                        height: '80%',
+                        margin: 'auto',
                         overflow: 'hidden',
+                        borderRadius: '20px', // Adding some border radius
+                        boxShadow: '0 4px 8px rgba(1, 0, 0, 0.9)' // Adding a shadow
                     },
                     overlay: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.75            )',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
+                        zIndex: '9999'
                     },
                 }}
             >
@@ -299,72 +312,66 @@ const AuctionProductDetails = () => {
                     <img
                         src={product.combinedMedia[selectedImageIndex].url}
                         alt={`Product media ${selectedImageIndex + 1}`}
-                        className=" w-full h-full"
+                        className="object-contain bg-transparent"
+                        style={{
+                            width: '100%',
+                            height: '90%'
+                        }}
                     />
                 )}
-                <button className='bg-red-500 w-20 text-white font-bold' onClick={closeModal}>Close</button>
+                <div className="flex justify-center">
+                    <button className="bg-red-500 text-white font-bold w-96 h-8 mt-4 rounded-full" onClick={closeModal}>Close</button>
+                </div>
             </Modal>
-
-            <div className='flex flex-col md:flex-row md:justify-center mt-3 md:mt-0 md:ml-4 md:mr-12'>
-                <div className='flex flex-col md:flex-row md:justify-center mt-4 md:mt-0 md:ml-12 md:mr-12'>
-                    <div className="flex-1 md:min-w-screen md:flex-col" style={{ width: "800px", height: "740px" }}>
-                        <div className='flex-1 md:h-72'>
-                            <Carousel>
-                                {product &&
-                                    product.combinedMedia &&
-                                    product.combinedMedia.reduce((acc, media, index) => {
-                                        if (index % 6 === 0) {
-                                            acc.push([]);
-                                        }
-                                        acc[acc.length - 1].push(media);
-                                        return acc;
-                                    }, []).map((mediaGroup, groupIndex) => (
-                                        <Carousel.Item key={groupIndex}>
-                                            {/* Use a grid for desktop view */}
-                                            <div className="hidden md:grid grid-cols-4 lg:grid-cols-3 gap-2">
-                                                {mediaGroup.map((media, index) => {
-                                                    if (media.type === 'image') {
-                                                        return (
-                                                            <img
-                                                                key={index}
-                                                                src={media.url}
-                                                                alt={`Product media ${groupIndex * 3 + index + 1}`}
-                                                                className="object-cover cursor-pointer"
-                                                                style={{ width: "350px", height: "350px" }}
-                                                                onClick={() => openModal(groupIndex * 3 + index)}
-                                                            />
-                                                        );
-                                                    }
-                                                    return null;
-                                                })}
-                                            </div>
-                                            {/* Use a 2x2 grid for mobile view */}
-                                            <div className="md:hidden grid grid-cols-1 sm:grid-cols-1 gap-2">
-                                                {mediaGroup.map((media, index) => {
-                                                    if (media.type === 'image' && index < 1) {
-                                                        return (
-                                                            <img
-                                                                key={index}
-                                                                src={media.url}
-                                                                alt={`Product media ${groupIndex * 2 + index + 1}`}
-                                                                className="ml-4 w-full h-full sm:h-64 object-cover cursor-pointer"
-                                                                style={{ width: "460px" }}
-                                                                onClick={() => openModal(groupIndex * 2 + index)}
-                                                            />
-                                                        );
-                                                    }
-                                                    return null;
-                                                })}
-                                            </div>
-                                        </Carousel.Item>
-                                    ))}
-                            </Carousel>
-                        </div>
+            <div className='flex flex-col md:flex-row md:justify-center pt-10 md:mt-0 md:ml-12 md:mr-12'>
+                <div className="flex-1 md:min-w-screen min-h-screen md:flex-col">
+                    <div className='flex-1 md:h-72'>
+                        <Carousel>
+                            {product &&
+                                product.combinedMedia &&
+                                product.combinedMedia.reduce((acc, media, index) => {
+                                    if (index % 6 === 0) {
+                                        acc.push([]);
+                                    }
+                                    acc[acc.length - 1].push(media);
+                                    return acc;
+                                }, []).map((mediaGroup, groupIndex) => (
+                                    <Carousel.Item key={groupIndex}>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                            {mediaGroup.map((media, index) => (
+                                                <div key={index} className="relative">
+                                                    {media.type === 'image' ? (
+                                                        <img
+                                                            src={media.url}
+                                                            alt={`Product media ${groupIndex * 3 + index + 1}`}
+                                                            className="w-full h-full object-contain cursor-pointer"
+                                                            onClick={() => openModal(groupIndex * 3 + index)}
+                                                        />
+                                                    ) : null}
+                                                    {media.type === 'video' ? (
+                                                        <video className="w-full h-full object-cover" controls>
+                                                            <source src={media.url} type="video/mp4" />
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                    ) : null}
+                                                    <div className="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md">
+                                                        {media.type === 'image' ? (
+                                                            <i className="fas fa-image text-gray-600"></i>
+                                                        ) : (
+                                                            <i className="fas fa-video text-gray-600"></i>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </Carousel.Item>
+                                ))}
+                        </Carousel>
                     </div>
                 </div>
 
                 {/* Product info */}
-                <div className='flex-1 mt-2  md:ml-0'>
+                <div className='flex-1 mt-2 lg:ml-12'>
                     <div className="max-w-xl px-4 pb-4 sm:px-6 ">
                         <div className="lg:col-span-1 lg:pr-2 ">
                             <h1 className="text-2xl mt-2 font-bold tracking-tight text-gray-700 sm:text-3xl">{product.name}</h1>
@@ -482,7 +489,7 @@ const AuctionProductDetails = () => {
                                     <th className="px-8 py-3 text-left text-m font-medium text-gray-700 uppercase tracking-wider">Bid Amount</th>
                                 </tr>
                             </thead>
-                            <tbody>     
+                            <tbody>
                                 {uniqueBidsArray.slice(0, 5).map((bid, index) => (
                                     <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
                                         <td className="px-8 py-3 whitespace-nowrap text-sm font-semibold">
@@ -499,104 +506,92 @@ const AuctionProductDetails = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col mt-24 mb-36 w-full md:ml-16">
-                <div className="flex flex-col mt-8">
-                    {/* Write a Review Section */}
-                    <div className="flex flex-col lg:flex-row space-y-4 lg:space-x-8 lg:space-y-0">
-                        <div className="w-full lg:w-1/3 p-4 bg-white rounded-lg shadow-lg">
-                            <h3 className="text-lg font-semibold mb-2">Write a Review</h3>
-                            <textarea
-                                name="body"
-                                value={newReview.body}
-                                onChange={handleReviewChange}
-                                placeholder="Your review..."
-                                className="border border-gray-300 p-2 mb-2 w-full h-32 rounded-md resize-none"
-                            />
-                            <div className="flex items-center mb-2">
-                                <StarRatings
-                                    rating={rating}
-                                    starDimension="20px"
-                                    starSpacing="2px"
-                                    starRatedColor="#FF9900"
-                                    changeRating={setRating}
-                                    numberOfStars={5}
-                                    name="rating"
-                                />
-                                <span className="ml-2 text-gray-600">{rating} / 5</span>
-                            </div>
-                            <button
-                                onClick={submitReview}
-                                className="bg-green-400 text-black text-lg px-2 py-1 rounded hover:bg-green-500 w-full"
-                            >
-                                Submit Review
-                            </button>
-                        </div>
-
-                        {/* Customer Reviews Section */}
-                        <div className="w-full lg:w-2/3 p-4 bg-white rounded-lg shadow-lg">
-                            <h3 className="text-lg font-semibold mb-2">Customer Ratings & Reviews</h3>
-                            <div className="flex items-center mb-4">
-                                <div className="mr-2 flex items-center">
-                                    <span className="text-gray-700">Average Rating:</span>
-                                    {[...Array(5)].map((_, index) => (
-                                        <svg
-                                            key={index}
-                                            className={`h-5 w-5 text-yellow-500 fill-current ${index < averageRating ? 'text-yellow-500' : 'text-gray-400'}`}
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                            aria-hidden="true"
-                                        >
-                                            <path d="M10 3.55l1.5 3.75h3.63l-2.93 2.28 1.1 3.35L10 12.11l-3.3 2.82 1.1-3.35-2.93-2.28h3.63l1.5-3.75z" />
-                                        </svg>
-                                    ))}
+            <div className="flex flex-col max-w-8xl mb-12">
+            <div className="flex flex-col space-y-4">
+                {/* Write a Q&A Section */}
+                <div className="w-full p-4 bg-gray-100 rounded-lg shadow-sm">
+                    <h3 className="text-lg font-semibold mb-2 text-gray-800">Ask a Question</h3>
+                    <input
+                        type="text"
+                        name="title"
+                        value={newQna.title}
+                        onChange={handleQnaChange}
+                        placeholder="Title..."
+                        className="border border-gray-300 p-2 mb-2 w-full rounded-md focus:outline-none focus:border-blue-500"
+                    />
+                    <textarea
+                        name="body"
+                        value={newQna.body}
+                        onChange={handleQnaChange}
+                        placeholder="Your question..."
+                        className="border border-gray-300 p-2 mb-2 w-full h-24 rounded-md resize-none focus:outline-none focus:border-blue-500"
+                    />
+                    <button
+                        onClick={submitQna}
+                        className="bg-blue-500 text-white text-base px-4 py-2 rounded hover:bg-blue-600 transition duration-200 w-full"
+                    >
+                        Submit Question
+                    </button>
+                </div>
+        
+                {/* Customer Q&A Section */}
+                <div className="w-full p-4 bg-gray-100 rounded-lg shadow-sm">
+                    <h3 className="text-lg font-semibold mb-2 text-gray-800">Customer Questions & Answers</h3>
+                    <ul className="space-y-4">
+                        {qnas.slice(0, visibleComments).map((qna, index) => (
+                            <li key={index} className="p-4 bg-white rounded-lg shadow-sm">
+                                <div className="flex items-center mb-2">
+                                    <span className="text-gray-700 font-semibold">{qna.User.firstName} {qna.User.lastName}</span>
                                 </div>
-                                <span className="text-gray-700">{averageRating.toFixed(1)} ({reviews.length} reviews)</span>
-                            </div>
-                            <ul className="space-y-4">
-                                {reviews.slice(0, visibleComments).map((review, index) => (
-                                    <li key={index} className="p-4 bg-gray-100 rounded-lg">
-                                        <div className="flex items-center mb-2">
-                                            {[...Array(5)].map((_, index) => (
-                                                <svg
-                                                    key={index}
-                                                    className={`h-5 w-5 text-yellow-500 fill-current ${index < review.rating ? 'text-yellow-500' : 'text-gray-400'}`}
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                    aria-hidden="true"
-                                                >
-                                                    <path d="M10 3.55l1.5 3.75h3.63l-2.93 2.28 1.1 3.35L10 12.11l-3.3 2.82 1.1-3.35-2.93-2.28h3.63l1.5-3.75z" />
-                                                </svg>
-                                            ))}
-                                            <span className="ml-2 text-gray-700 font-semibold">{review.User.firstName} {review.User.lastName}</span>
-                                        </div>
-                                        <p className="text-gray-800">{review.body}</p>
-                                        {review.ReviewImages && review.ReviewImages.length > 0 && (
-                                            <div className="flex flex-wrap mt-2">
-                                                {review.ReviewImages.map((img, imgIndex) => (
-                                                    <img
-                                                        key={imgIndex}
-                                                        src={`${apiBaseURL}/${img.imagePath}`}
-                                                        alt={`Review Image ${imgIndex + 1}`}
-                                                        className="object-cover w-20 h-20 mr-2 mb-2 rounded-md"
-                                                    />
-                                                ))}
-                                            </div>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                            {reviews.length > visibleComments && (
-                                <button
-                                    onClick={handleLoadMore}
-                                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                >
-                                    Load More
-                                </button>
-                            )}
-                        </div>
-                    </div>
+                                <h4 className="text-gray-800 font-semibold mb-1">{qna.title}</h4>
+                                <p className="text-gray-700 mb-2">{qna.body}</p>
+        
+                                {/* Reply Section */}
+                                <div className="mt-2 border-t pt-2">
+                                    <input
+                                        type="text"
+                                        name="body"
+                                        value={newReply.body}
+                                        onChange={handleReplyChange}
+                                        placeholder="Your reply..."
+                                        className="border border-gray-300 p-2 mb-1 w-full rounded-md focus:outline-none focus:border-blue-500"
+                                    />
+                                    <button
+                                        onClick={() => submitReply(qna.id)}
+                                        className="bg-green-500 text-white text-base px-3 py-1 rounded hover:bg-green-600 transition duration-200"
+                                    >
+                                        Submit Reply
+                                    </button>
+                                </div>
+        
+                                {/* Display Replies */}
+                                {qna.answers && qna.answers.length > 0 && (
+                                    <ul className="mt-2 space-y-2">
+                                        {qna.answers.map((answer, ansIndex) => (
+                                            <li key={ansIndex} className="p-2 bg-gray-100 border border-gray-200 rounded-lg">
+                                                <div className="flex items-center mb-1">
+                                                    <span className="text-gray-600 font-medium">{answer.User.firstName} {answer.User.lastName}</span>
+                                                </div>
+                                                <p className="text-gray-700">{answer.body}</p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                    {qnas.length > visibleComments && (
+                        <button
+                            onClick={handleLoadMore}
+                            className="mt-4 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
+                        >
+                            Load More
+                        </button>
+                    )}
                 </div>
             </div>
+        </div>
+        
         </div>
     );
 };
