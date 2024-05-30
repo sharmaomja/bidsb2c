@@ -20,8 +20,12 @@ const RefundPolicies = () => (
       <ul className="list-disc ml-6 text-gray-600 mb-4">
         <li><strong>Eligibility for Replacement:</strong> Items are eligible for replacement if they are defective, received damaged, or incorrect.</li>
         <li><strong>Process:</strong> Contact our customer support with details of the issue. If a replacement is warranted, we will arrange for the item to be collected and a replacement to be sent to you.</li>
-        <li><strong>Time Frame:</strong> Replacement items will be dispatched as soon as the original item has been received and inspected.</li>
+        <li><strong>Time Frame:</strong>Replacement items will be dispatched as soon as the original item has been received and inspected within 7 working days.</li>
+        <li><strong>No Return Policy:</strong>Except for cases specified under the refund and replacement eligibility criteria (defective, not as described, or damaged during transit), all sales are final, and no returns will be accepted. This includes:
+        Items that do not fit
+        Items no longer wanted</li>
       </ul>
+
 
       <h2 className="text-xl font-semibold text-gray-700 mb-4">Custom and Auctioned Items</h2>
       <ul className="list-disc ml-6 text-gray-600 mb-4">
