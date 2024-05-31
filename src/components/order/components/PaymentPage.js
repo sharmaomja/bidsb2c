@@ -11,14 +11,20 @@ const PaymentPage = () => {
 
   const handlePayment = async () => {
     setIsLoading(true);
-    const paymentStatus = 'paid';
 
     try {
-      await axios.post(`${apiBaseURL}/api/order/update-payment`, {
+      const response = await axios.post(`${apiBaseURL}/payment`, {
         orderId: orderDetails.orderId,
-        paymentStatus,
+        amount: orderDetails.totalPrice,
+        redirectUrl: `${window.location.origin}/order-success`,
+        userId: orderDetails.userId,
+        mobileNumber: '9876543210', // Add mobile number if required
       });
-      navigate('/order-success', { state: { order: orderDetails } });
+
+      console.log('Payment initiation response:', response.data);
+
+      const redirectUrl = response.data.data.instrumentResponse.redirectInfo.url;
+      window.location.href = redirectUrl;
     } catch (error) {
       console.error('Error processing payment:', error);
     } finally {
@@ -30,7 +36,6 @@ const PaymentPage = () => {
     const addressLines = address.split("\\n");
     return addressLines.join(', ');
   };
-
 
   return (
     <div className="max-w-3xl mx-auto my-8 p-8 border border-solid border-gray-300 rounded bg-white shadow-md">
@@ -64,7 +69,6 @@ const PaymentPage = () => {
         {isLoading ? 'Processing...' : 'Make Payment'}
       </button>
     </div>
-
   );
 };
 
