@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -101,7 +102,7 @@ const Checkout = () => {
     if (isAuthenticated && selectedAddress) {
       setIsLoading(true);
       const formattedAddress = formatAddress(selectedAddress);
-      const totalPrice = items.reduce((total, item) => total + (parseFloat(item.quantity) * parseFloat(item.productPrice || 0)), 0);
+      const totalPrice = items.reduce((total, item) => total + (parseFloat(item.quantity) * parseFloat(item.discountedPrice || 0)), 0);
 
       const orderData = {
         userId: user.userId,
@@ -291,8 +292,8 @@ const Checkout = () => {
                     <div className="ml-4 flex-1">
                       <h3 className="text-base font-medium text-gray-900">{item.productName}</h3>
                       <div className='flex space-x-10'>
-                        <div className='text-sm font-semibold'>Price: ₹{Math.ceil(item.productPrice)  }</div>
-                        <div className='text-sm font-semibold'>Total: ₹{Math.ceil((item.productPrice * item.quantity).toFixed(2))}</div>
+                        <div className='text-sm font-semibold'>Price: ₹{Math.ceil(item.discountedPrice)  }</div>
+                        <div className='text-sm font-semibold'>Total: ₹{Math.ceil((item.discountedPrice * item.quantity).toFixed(2))}</div>
                       </div>
                     </div>
 

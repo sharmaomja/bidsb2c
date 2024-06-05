@@ -10,7 +10,7 @@ const Cart = () => {
   const { user } = useAuth();
   const dispatch = useDispatch();
   const items = useSelector(selectItems);
-  const totalAmount = items.reduce((amount, item) => item.productPrice * item.quantity + amount, 0);
+  const totalAmount = items.reduce((amount, item) => item.discountedPrice * item.quantity + amount, 0);
   const totalItems = items.reduce((total, item) => item.quantity + total, 0);
   const [couponCode, setCouponCode] = useState('');
   const [discountedTotal, setDiscountedTotal] = useState(totalAmount);

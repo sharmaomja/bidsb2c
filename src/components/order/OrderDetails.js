@@ -307,7 +307,6 @@ const UserOrders = () => {
             placeholder="Search by Order ID"
           />
         </div>
-
         {currentOrders && currentOrders.length > 0 ? (
           currentOrders.map((order) => {
             return (
@@ -319,18 +318,15 @@ const UserOrders = () => {
                   <PDFDownloadLink className='p-1 font-bold ' document={<Invoice order={order} />} fileName={`Invoice_Order_${order.orderId}.pdf`}>
                     {({ blob, url, loading, error }) => (loading ? 'Generating Invoice...' : 'Download Invoice ⬇️')}
                   </PDFDownloadLink>
-
                 </div>
                 <div className="p-3">
                   {order.OrderItems && order.OrderItems.length > 0 ? (
                     order.OrderItems.map((item) => {
                       const returnInfo = item.Returns && item.Returns.length > 0 ? item.Returns[0] : null;
                       const isReturnRequested = returnInfo && returnInfo.status === 'requested';
-
                       const canCancel = order.orderStatus !== 'shipped';
                       const canTrack = order.orderStatus === 'shipped';
                       const canReturn = order.orderStatus === 'delivered';
-
                       return (
                         <div key={item.orderItemId} className={`flex mt-2 items-center border-b ${isMobile ? 'flex-col' : ''}`}>
                           <div className={`flex-shrink-0 ${isMobile ? 'mb-2' : ''}`}>

@@ -11,7 +11,6 @@ const PaymentPage = () => {
 
   const handlePayment = async () => {
     setIsLoading(true);
-
     try {
       const response = await axios.post(`${apiBaseURL}/payment`, {
         orderId: orderDetails.orderId,
