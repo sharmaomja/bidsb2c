@@ -6,31 +6,21 @@ const OrderSuccess = () => {
   const location = useLocation();
   const { order } = location.state || {};
   const navigate = useNavigate();
-
-  const [redirectTimer, setRedirectTimer] = useState(5); // Timer in seconds
+  const [redirectTimer, setRedirectTimer] = useState(5);
 
   useEffect(() => {
     const timerId = setTimeout(() => {
-      // Redirect to the orders page after the timer expires
       navigate('/orders');
-  
-      // Auto-refresh the orders page after 1 second
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-    }, redirectTimer * 1000); // Convert seconds to milliseconds
-  
-    // Clear the timer when the component unmounts
+    }, redirectTimer * 1000);
     return () => clearTimeout(timerId);
   }, [redirectTimer, navigate]);
-
-  // Display the countdown timer
   useEffect(() => {
     const timerInterval = setInterval(() => {
       setRedirectTimer((prevTimer) => prevTimer - 1);
     }, 1000);
-
-    // Clear the interval when the component unmounts
     return () => clearInterval(timerInterval);
   }, []);
 

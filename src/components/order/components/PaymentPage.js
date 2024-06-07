@@ -17,7 +17,7 @@ const PaymentPage = () => {
         amount: orderDetails.totalPrice,
         redirectUrl: `${window.location.origin}/order-success`,
         userId: orderDetails.userId,
-        mobileNumber: '9876543210', // Add mobile number if required
+        mobileNumber: '9876543210', 
       });
 
       console.log('Payment initiation response:', response.data);
